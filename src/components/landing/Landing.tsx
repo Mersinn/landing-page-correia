@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState } from "react";
 import heroImg from "@/assets/hero-matheus.jpg";
 import foodImg from "@/assets/food-real.jpg";
@@ -6,9 +6,9 @@ import trainingImg from "@/assets/training.jpg";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 function Cta({

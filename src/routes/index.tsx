@@ -1,29 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Landing } from "@/components/landing/Landing";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Matheus Correia — Nutrição para quem cansou de começar do zero" },
+      { name: "description", content: "Acompanhamento nutricional individualizado para treino, rotina real e resultado no corpo. Sem terrorismo, sem dieta genérica." },
+      { property: "og:title", content: "Matheus Correia — Nutrição de resultado, treino e rotina real" },
+      { property: "og:description", content: "Plano alimentar que cabe na sua rotina e ainda leva a resultado. Estratégia no lugar da culpa." },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
+  return <Landing />;
 }

@@ -1,60 +1,101 @@
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useRef, useState } from "react";
-import heroImg from "@/assets/hero-matheus.jpg";
-import foodImg from "@/assets/food-real.jpg";
-import trainingImg from "@/assets/training.jpg";
+import { useRef, useState, useEffect } from "react";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
 };
 
+/* -------------------- MC Monogram -------------------- */
+function MCMark({ className = "", title = "MC" }: { className?: string; title?: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 120"
+      role="img"
+      aria-label={title}
+      className={className}
+      fill="none"
+    >
+      <rect x="2" y="2" width="116" height="116" rx="6" stroke="currentColor" strokeWidth="2" />
+      {/* M */}
+      <path
+        d="M22 86 V34 L42 70 L62 34 V86"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinejoin="miter"
+        strokeLinecap="square"
+      />
+      {/* C */}
+      <path
+        d="M100 42 C 92 32, 76 32, 72 46 C 68 60, 68 68, 72 78 C 76 90, 92 90, 100 82"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="square"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+/* -------------------- CTA -------------------- */
 function Cta({
-  variant = "lime",
+  variant = "ice",
   children,
   className = "",
 }: {
-  variant?: "lime" | "outline" | "ghostDark";
+  variant?: "ice" | "outline" | "ghostDark";
   children: React.ReactNode;
   className?: string;
 }) {
   const base =
-    "group inline-flex items-center justify-center gap-3 px-7 py-4 text-sm font-medium tracking-wide uppercase transition-all duration-300 rounded-full";
+    "group inline-flex items-center justify-center gap-3 px-7 py-4 text-[12px] font-semibold tracking-[0.18em] uppercase transition-all duration-300 rounded-full";
   const variants: Record<string, string> = {
-    lime:
-      "bg-[var(--lime)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--lime)]",
+    ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--deep)] hover:text-[var(--ice)]",
     outline:
-      "border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--cream)]",
+      "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)]",
     ghostDark:
-      "border border-[var(--cream)]/30 text-[var(--cream)] hover:bg-[var(--lime)] hover:text-[var(--night)] hover:border-[var(--lime)]",
+      "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)]",
   };
   return (
-    <a href={WHATSAPP} target="_blank" rel="noreferrer" className={`${base} ${variants[variant]} ${className}`}>
+    <a
+      href={WHATSAPP}
+      target="_blank"
+      rel="noreferrer"
+      className={`${base} ${variants[variant]} ${className}`}
+    >
       {children}
-      <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+      <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+        →
+      </span>
     </a>
   );
 }
 
+/* -------------------- Nav -------------------- */
 function Nav() {
   return (
     <header className="absolute top-0 left-0 right-0 z-30">
       <div className="container-x flex items-center justify-between pt-6 md:pt-8">
-        <a href="#top" className="font-display text-lg tracking-tight text-[var(--ink)]">
-          Matheus Correia<span className="text-[var(--olive)]">.</span>
+        <a href="#top" className="flex items-center gap-3 text-[var(--ice)]">
+          <MCMark className="h-9 w-9 text-[var(--ice)]" />
+          <span className="hidden sm:inline font-display text-[11px] uppercase tracking-[0.28em] text-[var(--ice)]/70">
+            Matheus Correia / Nutrição
+          </span>
         </a>
-        <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-[var(--ink-soft)]">
-          <a href="#metodo" className="hover:text-[var(--ink)]">Método</a>
-          <a href="#servicos" className="hover:text-[var(--ink)]">Serviços</a>
-          <a href="#faq" className="hover:text-[var(--ink)]">FAQ</a>
+        <nav className="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+          <a href="#metodo" className="hover:text-[var(--ice)] transition-colors">Método</a>
+          <a href="#servicos" className="hover:text-[var(--ice)] transition-colors">Serviços</a>
+          <a href="#faq" className="hover:text-[var(--ice)] transition-colors">FAQ</a>
         </nav>
         <a
           href={WHATSAPP}
           target="_blank"
           rel="noreferrer"
-          className="hidden md:inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] border border-[var(--ink)] rounded-full px-4 py-2 hover:bg-[var(--ink)] hover:text-[var(--cream)] transition-colors"
+          className="inline-flex items-center gap-2 text-[10px] md:text-[11px] uppercase tracking-[0.24em] font-display font-semibold border border-[var(--ice)]/30 rounded-full px-4 py-2 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors"
         >
           Agendar <span aria-hidden>→</span>
         </a>
@@ -63,6 +104,7 @@ function Nav() {
   );
 }
 
+/* -------------------- Hero -------------------- */
 function Hero() {
   const headline = [
     "Nutrição para quem cansou",
@@ -70,25 +112,37 @@ function Hero() {
     "toda segunda-feira.",
   ];
   return (
-    <section id="top" className="relative bg-[var(--cream)] pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden">
+    <section
+      id="top"
+      className="relative bg-[var(--night)] text-[var(--ice)] pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden"
+    >
       <Nav />
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end">
+
+      {/* Watermark MC */}
+      <MCMark
+        aria-hidden
+        className="pointer-events-none select-none absolute -right-16 -bottom-24 h-[560px] w-[560px] text-[var(--ice)]/[0.035]"
+      />
+
+      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end relative">
         <div className="lg:col-span-7">
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="eyebrow mb-8"
+            className="flex items-center gap-3 mb-10"
           >
-            ● Routine Performance — Nutrição Clínica
-          </motion.p>
-          <h1 className="font-display text-[44px] leading-[1.02] sm:text-6xl md:text-7xl lg:text-[88px] tracking-[-0.03em] text-[var(--ink)]">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--ice)]/60">Nutrição Clínica · Esportiva</p>
+          </motion.div>
+
+          <h1 className="font-display font-extrabold text-[44px] leading-[0.95] sm:text-6xl md:text-7xl lg:text-[96px] tracking-[-0.045em] text-[var(--ice)]">
             {headline.map((line, i) => (
               <span key={i} className="block overflow-hidden">
                 <motion.span
                   initial={{ y: "110%" }}
                   animate={{ y: 0 }}
-                  transition={{ duration: 0.9, delay: 0.15 + i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.95, delay: 0.15 + i * 0.12, ease }}
                   className="block"
                 >
                   {line}
@@ -96,62 +150,97 @@ function Hero() {
               </span>
             ))}
           </h1>
+
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.85 }}
-            className="mt-8 max-w-xl text-base md:text-lg text-[var(--ink-soft)] leading-relaxed"
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="mt-10 max-w-xl text-base md:text-lg text-[var(--mute)] leading-relaxed"
           >
             Acompanhamento individualizado para transformar sua alimentação, sua rotina e seu resultado no corpo — sem terrorismo nutricional, sem plano genérico e sem exigir uma vida perfeita.
           </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.05 }}
-            className="mt-10 flex flex-col sm:flex-row gap-4 items-start sm:items-center"
+            transition={{ duration: 0.6, delay: 1.1 }}
+            className="mt-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
           >
             <Cta>Agendar avaliação pelo WhatsApp</Cta>
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--ink-soft)]">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
               Emagrecimento · Hipertrofia · Recomposição · Rotina real
             </p>
           </motion.div>
         </div>
 
+        {/* Right column: typographic portrait slot */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.4 }}
+          transition={{ duration: 1, delay: 0.4 }}
           className="lg:col-span-5 relative"
         >
-          <div className="relative aspect-[4/5] overflow-hidden">
-            <motion.img
-              src={heroImg}
-              alt="Matheus Correia, nutricionista"
-              width={1280}
-              height={1600}
-              className="h-full w-full object-cover"
-              initial={{ scale: 1.15, clipPath: "inset(100% 0 0 0)" }}
-              animate={{ scale: 1, clipPath: "inset(0% 0 0 0)" }}
-              transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
+          <motion.div
+            initial={{ clipPath: "inset(100% 0 0 0)" }}
+            animate={{ clipPath: "inset(0% 0 0 0)" }}
+            transition={{ duration: 1.3, delay: 0.5, ease }}
+            className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
+          >
+            {/* Layered MC composition stands in for the real photo until it's provided */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[var(--deep)] via-[var(--petrol)] to-[var(--nearblack)]" />
+            <MCMark
+              aria-hidden
+              className="absolute inset-0 m-auto h-[78%] w-[78%] text-[var(--ice)]/15"
             />
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-[var(--cream)] mix-blend-difference">
-              <span>Matheus Correia</span>
-              <span>Nutri · CRN —</span>
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
+              <span>Mat. Correia</span>
+              <span>Portrait · 01</span>
             </div>
-          </div>
+            <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
+              <p className="font-display font-extrabold text-[var(--ice)] leading-none tracking-[-0.04em] text-4xl md:text-5xl">
+                MC<span className="text-[var(--mute)]">/</span>26
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold max-w-[10rem] text-right">
+                Routine<br />Performance
+              </p>
+            </div>
+          </motion.div>
         </motion.div>
-      </div>
-
-      <div className="container-x mt-16 md:mt-24 border-t border-[var(--rule)] pt-6 flex flex-wrap justify-between gap-4 text-[11px] uppercase tracking-[0.2em] text-[var(--ink-soft)]">
-        <span>Resultado sem terrorismo</span>
-        <span>Flexibilidade com protocolo</span>
-        <span>Treino com nutrição</span>
-        <span className="hidden md:inline">Estratégia no lugar da culpa</span>
       </div>
     </section>
   );
 }
 
+/* -------------------- Credibility bar -------------------- */
+const CHIPS = [
+  "Nutrição Clínica",
+  "Nutrição Esportiva",
+  "Exames Laboratoriais",
+  "Ciências do Emagrecimento",
+  "IA aplicada à prática nutricional",
+];
+
+function CredibilityBar() {
+  return (
+    <section className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10">
+      <div className="container-x py-8 md:py-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+        <p className="eyebrow text-[var(--mute)] md:whitespace-nowrap">Aprofundamento</p>
+        <div className="flex flex-wrap gap-2 md:gap-3">
+          {CHIPS.map((c) => (
+            <span
+              key={c}
+              className="text-[11px] uppercase tracking-[0.18em] font-display font-semibold border border-[var(--ice)]/15 text-[var(--ice)]/80 rounded-full px-4 py-2"
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- Pain / Manifesto -------------------- */
 function Pain() {
   const lines = [
     "Você até começa bem.",
@@ -162,100 +251,113 @@ function Pain() {
     "Você falha porque o plano não foi feito para a sua vida.",
   ];
   return (
-    <section className="bg-[var(--cream)] py-24 md:py-36">
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        <div className="lg:col-span-5 lg:sticky lg:top-24">
-          <p className="eyebrow mb-6">02 — Identificação</p>
-          <motion.div
-            initial={{ opacity: 0, scale: 1.05 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1 }}
-            className="aspect-[4/5] overflow-hidden"
-          >
-            <img
-              src={foodImg}
-              alt="Hambúrguer e chocolate — comida real"
-              loading="lazy"
-              width={1400}
-              height={1000}
-              className="h-full w-full object-cover"
-            />
-          </motion.div>
-          <p className="mt-4 text-xs uppercase tracking-[0.2em] text-[var(--ink-soft)]">
-            <span className="text-[var(--gold)]">●</span> Comer não é o problema.
-          </p>
+    <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
+      <MCMark
+        aria-hidden
+        className="pointer-events-none select-none absolute -left-24 top-1/2 -translate-y-1/2 h-[640px] w-[640px] text-[var(--ice)]/[0.025]"
+      />
+      <div className="container-x relative">
+        <div className="flex items-center gap-3 mb-12">
+          <span className="h-px w-10 bg-[var(--ice)]/40" />
+          <p className="eyebrow text-[var(--mute)]">02 — Identificação</p>
         </div>
 
-        <div className="lg:col-span-7">
-          <div className="space-y-3 md:space-y-4">
-            {lines.map((line, i) => (
-              <motion.h2
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.7, delay: i * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                className={`font-display text-3xl md:text-5xl leading-[1.05] tracking-[-0.02em] ${
-                  i % 2 === 1 ? "text-[var(--ink-soft)]" : "text-[var(--ink)]"
-                }`}
-              >
-                {line}
-              </motion.h2>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-16 border-t border-[var(--rule)] pt-10"
-          >
-            <p className="eyebrow mb-4">Tese</p>
-            <h3 className="font-display text-4xl md:text-6xl leading-[1.02] tracking-[-0.02em] text-[var(--ink)]">
-              Você não precisa de culpa.
-              <br />
-              Precisa de <em className="not-italic relative inline-block">
-                estratégia.
-                <span className="absolute left-0 -bottom-1 h-[6px] w-full bg-[var(--lime)]/70 -z-0" aria-hidden />
-              </em>
-            </h3>
-          </motion.div>
+        <div className="max-w-4xl space-y-2 md:space-y-3">
+          {lines.map((line, i) => (
+            <motion.h2
+              key={i}
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, delay: i * 0.08, ease }}
+              className={`font-display font-extrabold text-3xl md:text-5xl lg:text-6xl leading-[1.02] tracking-[-0.035em] ${
+                i % 2 === 1 ? "text-[var(--mute)] pl-6 md:pl-16" : "text-[var(--ice)]"
+              }`}
+            >
+              {line}
+            </motion.h2>
+          ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 1, delay: 0.2, ease }}
+          className="mt-24 md:mt-36 border-t border-[var(--ice)]/15 pt-12 md:pt-16"
+        >
+          <p className="eyebrow text-[var(--mute)] mb-6">Tese</p>
+          <h3 className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
+            Você não precisa de culpa.
+          </h3>
+          <h3 className="mt-3 md:mt-5 font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em]">
+            Precisa de{" "}
+            <span
+              className="italic font-extrabold"
+              style={{
+                WebkitTextStroke: "1.5px var(--ice)",
+                color: "transparent",
+              }}
+            >
+              estratégia.
+            </span>
+          </h3>
+        </motion.div>
       </div>
     </section>
   );
 }
 
+/* -------------------- Positioning -------------------- */
 function Positioning() {
   return (
-    <section className="bg-[var(--cream)] border-t border-[var(--rule)] py-24 md:py-32">
+    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
-          <p className="eyebrow mb-6">03 — Individualidade</p>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">03 — Individualidade</p>
+          </div>
           <motion.h2
             variants={fadeUp}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="font-display text-4xl md:text-5xl leading-[1.05] tracking-[-0.02em] text-[var(--ink)]"
+            className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[1.0] tracking-[-0.04em]"
           >
             O acompanhamento não começa com um cardápio.
-            <span className="block text-[var(--ink-soft)]">Começa entendendo você.</span>
+            <span className="block text-[var(--mute)]">Começa entendendo você.</span>
           </motion.h2>
         </div>
-        <div className="lg:col-span-7 lg:pl-12 lg:border-l border-[var(--rule)]">
-          <motion.p variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="text-lg md:text-xl text-[var(--ink)] leading-relaxed">
+        <div className="lg:col-span-7 lg:pl-12 lg:border-l border-[var(--ice)]/15">
+          <motion.p
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="text-lg md:text-xl text-[var(--ice)] leading-relaxed"
+          >
             Sua rotina, seus horários, seu treino, sua fome, suas preferências, suas dificuldades e o que já falhou antes.
           </motion.p>
 
-          <motion.h3 variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-10 font-display text-2xl md:text-3xl tracking-[-0.02em] text-[var(--ink)]">
+          <motion.h3
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="mt-12 font-display font-bold text-2xl md:text-3xl tracking-[-0.03em]"
+          >
             Sua rotina é única.
-            <span className="block text-[var(--olive)]">Seu plano alimentar também precisa ser.</span>
+            <span className="block text-[var(--mute)]">Seu plano alimentar também precisa ser.</span>
           </motion.h3>
 
-          <motion.p variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} className="mt-8 text-base md:text-lg text-[var(--ink-soft)] leading-relaxed max-w-2xl">
+          <motion.p
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="mt-8 text-base md:text-lg text-[var(--mute)] leading-relaxed max-w-2xl"
+          >
             O trabalho do Matheus Correia é construir um plano alimentar com estratégia — não uma dieta perfeita no papel. Um plano que encaixa comida de verdade, preferências, ajustes e protocolo para você continuar evoluindo sem viver no ciclo de começa na segunda e desiste na sexta.
           </motion.p>
         </div>
@@ -264,6 +366,7 @@ function Positioning() {
   );
 }
 
+/* -------------------- Method -------------------- */
 const METHOD_STEPS = [
   {
     n: "01",
@@ -273,86 +376,142 @@ const METHOD_STEPS = [
   {
     n: "02",
     title: "Definir o objetivo real",
-    text: "Emagrecer, ganhar massa ou recompor o corpo exigem estratégias diferentes.",
+    text: "Emagrecer, ganhar massa ou recompor o corpo exigem estratégias diferentes — não o mesmo cardápio em escala.",
   },
   {
     n: "03",
     title: "Construir uma alimentação possível",
-    text: "Comida de verdade, preferências, flexibilidade e protocolo.",
+    text: "Comida de verdade, preferências, flexibilidade e protocolo. Um plano que cabe no dia em que tudo deu certo e no dia em que nada deu.",
   },
   {
     n: "04",
     title: "Ajustar antes de você abandonar",
-    text: "O acompanhamento corrige rota antes que a rotina vire desculpa para desistir.",
+    text: "O acompanhamento corrige rota antes que a rotina vire desculpa para desistir. Esse é o passo onde a maioria das dietas falha — e onde o trabalho começa de verdade.",
   },
 ];
 
 function Method() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
-  const activeIndex = useTransform(scrollYProgress, [0, 1], [0, METHOD_STEPS.length - 0.0001]);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
   const [active, setActive] = useState(0);
-  activeIndex.on("change", (v) => setActive(Math.min(METHOD_STEPS.length - 1, Math.floor(v))));
+  useEffect(() => {
+    return scrollYProgress.on("change", (v) => {
+      const idx = Math.min(METHOD_STEPS.length - 1, Math.floor(v * METHOD_STEPS.length));
+      setActive(idx);
+    });
+  }, [scrollYProgress]);
+
+  const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="metodo" className="bg-[var(--night)] text-[var(--cream)]">
-      <div className="container-x pt-24 md:pt-32 pb-8 md:pb-12">
-        <p className="eyebrow text-[var(--cream)]/60 mb-6">04 — Método</p>
-        <p className="font-display text-sm md:text-base uppercase tracking-[0.2em] text-[var(--lime)]">
+    <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative overflow-hidden">
+      <MCMark
+        aria-hidden
+        className="pointer-events-none select-none absolute -left-32 -top-32 h-[480px] w-[480px] text-[var(--ice)]/[0.03]"
+      />
+      <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
+        <div className="flex items-center gap-3 mb-6">
+          <span className="h-px w-10 bg-[var(--ice)]/40" />
+          <p className="eyebrow text-[var(--mute)]">04 — Método</p>
+        </div>
+        <p className="font-display font-semibold text-xs md:text-sm uppercase tracking-[0.24em] text-[var(--mute)]">
           Flexível não significa sem método. / Rígido não significa eficiente.
         </p>
-        <h2 className="mt-6 font-display text-4xl md:text-6xl lg:text-7xl tracking-[-0.02em] leading-[1.02] max-w-4xl">
+        <h2 className="mt-6 font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
           Um plano feito para sair do papel.
         </h2>
       </div>
 
       {/* Desktop sticky scroll */}
-      <div ref={containerRef} className="hidden lg:block relative" style={{ height: `${METHOD_STEPS.length * 100}vh` }}>
-        <div className="sticky top-0 h-screen flex items-center">
-          <div className="container-x grid grid-cols-12 gap-12 w-full">
-            <div className="col-span-5 flex items-center">
-              <div className="font-display text-[18rem] leading-none tracking-[-0.05em] text-[var(--lime)] tabular-nums">
-                <motion.span key={active} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="inline-block">
-                  {METHOD_STEPS[active].n}
-                </motion.span>
+      <div
+        ref={containerRef}
+        className="hidden lg:block relative"
+        style={{ height: `${METHOD_STEPS.length * 100}vh` }}
+      >
+        <div className="sticky top-0 h-screen flex flex-col justify-center">
+          {/* progress bar */}
+          <div className="container-x">
+            <div className="h-px w-full bg-[var(--ice)]/10 relative mb-12">
+              <motion.div
+                style={{ width: progressWidth }}
+                className="absolute left-0 top-0 h-px bg-[var(--ice)]"
+              />
+              <div className="absolute -top-4 left-0 right-0 flex justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+                {METHOD_STEPS.map((s, i) => (
+                  <span key={s.n} className={i === active ? "text-[var(--ice)]" : ""}>
+                    {s.n}
+                  </span>
+                ))}
               </div>
             </div>
-            <div className="col-span-7 space-y-10">
-              {METHOD_STEPS.map((step, i) => (
-                <motion.div
-                  key={step.n}
-                  animate={{ opacity: i === active ? 1 : 0.25, x: i === active ? 0 : -8 }}
-                  transition={{ duration: 0.5 }}
-                  className="border-t border-[var(--cream)]/15 pt-6"
-                >
-                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--cream)]/50">Etapa {step.n}</p>
-                  <h3 className="mt-3 font-display text-3xl xl:text-4xl tracking-[-0.02em] text-[var(--cream)]">
-                    {step.title}
-                  </h3>
-                  <p className="mt-3 text-[var(--cream)]/70 max-w-xl leading-relaxed">{step.text}</p>
-                </motion.div>
-              ))}
+          </div>
+
+          <div className="container-x grid grid-cols-12 gap-12 items-center">
+            <div className="col-span-5 flex items-center">
+              <motion.span
+                key={active}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease }}
+                className="font-display font-extrabold text-[16rem] xl:text-[20rem] leading-none tracking-[-0.06em] text-[var(--ice)] tabular-nums"
+              >
+                {METHOD_STEPS[active].n}
+              </motion.span>
+            </div>
+            <div className="col-span-7">
+              <motion.div
+                key={METHOD_STEPS[active].n + "-card"}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease }}
+                className="border-l-2 border-[var(--ice)] pl-8"
+              >
+                <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+                  Etapa {METHOD_STEPS[active].n} / 04
+                </p>
+                <h3 className="mt-4 font-display font-extrabold text-4xl xl:text-5xl tracking-[-0.04em] leading-[1.0]">
+                  {METHOD_STEPS[active].title}
+                </h3>
+                <p className="mt-6 text-[var(--mute)] text-lg leading-relaxed max-w-xl">
+                  {METHOD_STEPS[active].text}
+                </p>
+                {active === 3 && (
+                  <p className="mt-8 inline-block border border-[var(--ice)]/30 rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-[var(--ice)] font-display font-semibold">
+                    Onde a maioria desiste — onde o trabalho começa
+                  </p>
+                )}
+              </motion.div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Mobile/tablet stacked */}
-      <div className="lg:hidden container-x pb-24 space-y-8">
-        {METHOD_STEPS.map((step) => (
+      <div className="lg:hidden container-x pb-24 mt-4 space-y-4">
+        {METHOD_STEPS.map((step, i) => (
           <motion.div
             key={step.n}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6 }}
-            className="border-t border-[var(--cream)]/15 pt-6"
+            transition={{ duration: 0.6, delay: i * 0.05 }}
+            className="border border-[var(--ice)]/12 bg-[var(--deep)] p-6 rounded-lg"
           >
-            <div className="flex items-baseline gap-4">
-              <span className="font-display text-5xl text-[var(--lime)] tabular-nums">{step.n}</span>
-              <h3 className="font-display text-2xl tracking-[-0.02em]">{step.title}</h3>
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="font-display font-extrabold text-6xl text-[var(--ice)] tabular-nums tracking-[-0.05em] leading-none">
+                {step.n}
+              </span>
+              <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+                / 04
+              </span>
             </div>
-            <p className="mt-3 text-[var(--cream)]/70 leading-relaxed">{step.text}</p>
+            <h3 className="mt-5 font-display font-extrabold text-2xl tracking-[-0.035em] leading-[1.05]">
+              {step.title}
+            </h3>
+            <p className="mt-3 text-[var(--mute)] leading-relaxed text-sm">{step.text}</p>
           </motion.div>
         ))}
       </div>
@@ -360,26 +519,47 @@ function Method() {
   );
 }
 
+/* -------------------- Training + Nutrition -------------------- */
 function TrainingNutrition() {
   return (
-    <section className="bg-[var(--night)] text-[var(--cream)] border-t border-[var(--cream)]/10 py-24 md:py-32">
+    <section className="bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        {/* Typographic block stands in for real photo */}
         <motion.div
-          initial={{ opacity: 0, scale: 1.05 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 32 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="lg:col-span-6 aspect-[5/4] overflow-hidden order-2 lg:order-1"
+          transition={{ duration: 1, ease }}
+          className="lg:col-span-6 order-2 lg:order-1 relative aspect-[5/4] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden p-8 flex flex-col justify-between"
         >
-          <img src={trainingImg} alt="Treino" loading="lazy" width={1400} height={1000} className="h-full w-full object-cover grayscale-[0.2]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--nearblack)] via-[var(--deep)] to-[var(--nearblack)]" />
+          <MCMark
+            aria-hidden
+            className="absolute -right-12 -bottom-12 h-72 w-72 text-[var(--ice)]/[0.06]"
+          />
+          <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold">
+            <span>Frame 02</span>
+            <span>Treino / Nutrição</span>
+          </div>
+          <div className="relative">
+            <p className="font-display font-extrabold text-5xl md:text-6xl lg:text-7xl leading-[0.95] tracking-[-0.045em] text-[var(--ice)]">
+              Estímulo<br />
+              <span className="text-[var(--mute)]">+</span><br />
+              Resultado
+            </p>
+          </div>
         </motion.div>
+
         <div className="lg:col-span-6 order-1 lg:order-2">
-          <p className="eyebrow text-[var(--cream)]/60 mb-6">05 — Treino + Nutrição</p>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.02] tracking-[-0.02em]">
-            A academia constrói <span className="text-[var(--cream)]/50">o estímulo.</span>
-            <span className="block">A nutrição constrói <span className="text-[var(--lime)]">o resultado.</span></span>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">05 — Treino + Nutrição</p>
+          </div>
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[0.98] tracking-[-0.045em]">
+            A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
+            <span className="block">A nutrição constrói o resultado.</span>
           </h2>
-          <p className="mt-8 text-[var(--cream)]/70 text-lg leading-relaxed max-w-xl">
+          <p className="mt-8 text-[var(--mute)] text-lg leading-relaxed max-w-xl">
             Se você já está fazendo esforço na academia, sua alimentação precisa trabalhar junto. A nutrição organiza energia, proteína, recuperação e consistência para esse esforço aparecer no corpo.
           </p>
         </div>
@@ -388,33 +568,37 @@ function TrainingNutrition() {
   );
 }
 
+/* -------------------- Real Life -------------------- */
 function RealLife() {
   return (
-    <section className="bg-[var(--cream)] py-24 md:py-32">
+    <section className="bg-[var(--icebg)] text-[var(--night)] py-24 md:py-32">
       <div className="container-x">
-        <p className="eyebrow mb-6"><span className="text-[var(--gold)]">●</span> 06 — Vida real</p>
+        <div className="flex items-center gap-3 mb-6">
+          <span className="h-px w-10 bg-[var(--night)]/30" />
+          <p className="eyebrow text-[var(--night)]/60">06 — Vida real</p>
+        </div>
         <motion.h2
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="font-display text-4xl md:text-6xl lg:text-7xl leading-[1.02] tracking-[-0.02em] text-[var(--ink)] max-w-5xl"
+          className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[0.98] tracking-[-0.045em] text-[var(--night)] max-w-5xl"
         >
           Hambúrguer, chocolate e vida social não precisam ser{" "}
-          <span className="text-[var(--gold)]">o fim do seu resultado.</span>
+          <span className="text-[var(--night)]/50">o fim do seu resultado.</span>
         </motion.h2>
 
-        <div className="mt-14 grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-          <div className="md:col-span-7 space-y-6 text-[var(--ink)] text-lg leading-relaxed max-w-2xl">
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
+          <div className="md:col-span-7 space-y-6 text-[var(--night)] text-lg leading-relaxed max-w-2xl">
             <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
-            <p className="text-[var(--ink-soft)]">
+            <p className="text-[var(--night)]/60">
               Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes para que sua alimentação tenha liberdade sem virar bagunça.
             </p>
           </div>
-          <div className="md:col-span-5 md:pl-10 md:border-l border-[var(--rule)]">
-            <h3 className="font-display text-3xl md:text-4xl tracking-[-0.02em] text-[var(--ink)]">
+          <div className="md:col-span-5 md:pl-10 md:border-l border-[var(--night)]/20">
+            <h3 className="font-display font-extrabold text-3xl md:text-4xl tracking-[-0.04em]">
               O plano certo não te prende.
-              <span className="block text-[var(--olive)]">Ele te dá direção.</span>
+              <span className="block text-[var(--night)]/60">Ele te dá direção.</span>
             </h3>
           </div>
         </div>
@@ -423,6 +607,7 @@ function RealLife() {
   );
 }
 
+/* -------------------- Services -------------------- */
 const SERVICES = [
   { t: "Emagrecimento", d: "Plano com déficit sustentável e ajuste contínuo." },
   { t: "Hipertrofia", d: "Estratégia para ganho de massa com qualidade." },
@@ -434,39 +619,47 @@ const SERVICES = [
 
 function Services() {
   return (
-    <section id="servicos" className="bg-[var(--cream)] border-t border-[var(--rule)] py-24 md:py-32">
+    <section
+      id="servicos"
+      className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32"
+    >
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
-          <p className="eyebrow mb-6">07 — Serviços + Sobre</p>
-          <h2 className="font-display text-4xl md:text-5xl tracking-[-0.02em] text-[var(--ink)] leading-[1.05]">
-            Um trabalho, vários objetivos.
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">07 — Serviços + Sobre</p>
+          </div>
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
+            Um trabalho,<br />vários objetivos.
           </h2>
-          <p className="mt-6 text-[var(--ink-soft)] text-base leading-relaxed max-w-md">
+          <p className="mt-6 text-[var(--mute)] text-base leading-relaxed max-w-md">
             Matheus Correia une prática clínica, vivência no treino e atualização constante no universo fitness para construir planos que não existem só no papel.
           </p>
-          <div className="mt-8 inline-flex flex-col gap-1 text-xs uppercase tracking-[0.18em] text-[var(--ink-soft)] border border-[var(--rule)] rounded-2xl px-5 py-4">
-            <span>Nutricionista · CRN —</span>
+          <div className="mt-8 inline-flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold border border-[var(--ice)]/15 rounded-lg px-5 py-4">
+            <span>Nutricionista</span>
             <span>Atendimento presencial / online</span>
           </div>
         </div>
 
-        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {SERVICES.map((s, i) => (
             <motion.div
               key={s.t}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="group border border-[var(--rule)] bg-[var(--cream)] hover:bg-white hover:border-[var(--ink)] transition-colors p-6 rounded-2xl"
+              transition={{ duration: 0.5, delay: i * 0.06 }}
+              className="group border border-[var(--ice)]/12 bg-[var(--deep)] hover:bg-[var(--petrol)] hover:border-[var(--ice)]/35 transition-colors p-6 rounded-lg"
             >
               <div className="flex items-start justify-between gap-4">
-                <h3 className="font-display text-xl md:text-2xl tracking-[-0.02em] text-[var(--ink)]">{s.t}</h3>
-                <span className="text-xs tabular-nums text-[var(--ink-soft)] group-hover:text-[var(--lime)] transition-colors">
+                <h3 className="font-display font-bold text-xl md:text-2xl tracking-[-0.03em]">
+                  {s.t}
+                </h3>
+                <span className="text-[10px] tabular-nums text-[var(--mute)] font-display font-semibold tracking-[0.2em] group-hover:text-[var(--ice)] transition-colors">
                   {String(i + 1).padStart(2, "0")}
                 </span>
               </div>
-              <p className="mt-3 text-sm text-[var(--ink-soft)] leading-relaxed">{s.d}</p>
+              <p className="mt-3 text-sm text-[var(--mute)] leading-relaxed">{s.d}</p>
             </motion.div>
           ))}
         </div>
@@ -475,6 +668,7 @@ function Services() {
   );
 }
 
+/* -------------------- FAQ -------------------- */
 const FAQS = [
   { q: "Preciso cortar tudo que gosto?", a: "Não. O plano é construído com estratégia, não com proibição. A ideia é organizar quantidade, frequência e contexto, mantendo comida real e o que você gosta dentro do que faz sentido para seu objetivo." },
   { q: "O plano serve para quem treina?", a: "Sim. O foco do trabalho é justamente unir treino e nutrição, organizando energia, proteína e recuperação para o esforço aparecer no corpo." },
@@ -488,35 +682,49 @@ const FAQS = [
 function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="bg-[var(--cream)] border-t border-[var(--rule)] py-24 md:py-32">
+    <section
+      id="faq"
+      className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32"
+    >
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-4">
-          <p className="eyebrow mb-6">08 — Perguntas</p>
-          <h2 className="font-display text-4xl md:text-5xl tracking-[-0.02em] text-[var(--ink)] leading-[1.05]">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">08 — Perguntas</p>
+          </div>
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Antes da primeira consulta.
           </h2>
         </div>
         <div className="lg:col-span-8">
-          <div className="border-t border-[var(--ink)]/80">
+          <div className="border-t border-[var(--ice)]/20">
             {FAQS.map((f, i) => {
               const isOpen = open === i;
               return (
-                <div key={f.q} className="border-b border-[var(--ink)]/80">
+                <div key={f.q} className="border-b border-[var(--ice)]/20">
                   <button
                     onClick={() => setOpen(isOpen ? null : i)}
                     className="w-full flex items-center justify-between gap-6 py-6 text-left"
                   >
-                    <span className="font-display text-lg md:text-2xl tracking-[-0.01em] text-[var(--ink)]">
+                    <span className="font-display font-bold text-lg md:text-2xl tracking-[-0.025em] text-[var(--ice)]">
                       {f.q}
                     </span>
-                    <span className={`text-2xl text-[var(--ink)] transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>+</span>
+                    <span
+                      className={`text-2xl text-[var(--ice)] transition-transform duration-300 ${
+                        isOpen ? "rotate-45" : ""
+                      }`}
+                    >
+                      +
+                    </span>
                   </button>
                   <div
                     className="grid transition-[grid-template-rows] duration-500 ease-out"
                     style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
                   >
                     <div className="overflow-hidden">
-                      <p className="pb-6 pr-10 text-[var(--ink-soft)] leading-relaxed max-w-2xl">{f.a}</p>
+                      <p className="pb-6 pr-10 text-[var(--mute)] leading-relaxed max-w-2xl">
+                        {f.a}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -529,28 +737,37 @@ function Faq() {
   );
 }
 
+/* -------------------- Final CTA -------------------- */
 function FinalCta() {
   return (
-    <section className="bg-[var(--night)] text-[var(--cream)] py-28 md:py-40">
-      <div className="container-x text-center max-w-5xl mx-auto">
-        <p className="eyebrow text-[var(--lime)] mb-8">● Comece</p>
+    <section className="relative bg-[var(--night)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
+      <MCMark
+        aria-hidden
+        className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-32 h-[680px] w-[680px] text-[var(--ice)]/[0.03]"
+      />
+      <div className="container-x text-center max-w-5xl mx-auto relative">
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <span className="h-px w-10 bg-[var(--ice)]/40" />
+          <p className="eyebrow text-[var(--mute)]">Comece</p>
+          <span className="h-px w-10 bg-[var(--ice)]/40" />
+        </div>
         <motion.h2
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.02] tracking-[-0.03em]"
+          transition={{ duration: 0.9, ease }}
+          className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em]"
         >
           Pare de recomeçar toda segunda.
-          <span className="block text-[var(--cream)]/60">
+          <span className="block text-[var(--mute)]">
             Comece a seguir um plano feito para você continuar.
           </span>
         </motion.h2>
-        <p className="mt-10 text-[var(--cream)]/70 max-w-2xl mx-auto text-lg leading-relaxed">
+        <p className="mt-10 text-[var(--mute)] max-w-2xl mx-auto text-lg leading-relaxed">
           Transforme sua alimentação, sua rotina e seu resultado com um acompanhamento individualizado — sem culpa, sem terrorismo nutricional e sem dieta genérica.
         </p>
         <div className="mt-12 flex justify-center">
-          <Cta variant="lime" className="text-base px-9 py-5">
+          <Cta variant="ice" className="text-base px-9 py-5">
             Falar com Matheus no WhatsApp
           </Cta>
         </div>
@@ -559,13 +776,22 @@ function FinalCta() {
   );
 }
 
+/* -------------------- Footer -------------------- */
 function Footer() {
   return (
-    <footer className="bg-[var(--night)] text-[var(--cream)]/60 border-t border-[var(--cream)]/10">
-      <div className="container-x py-10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs uppercase tracking-[0.2em]">
-        <span>© {new Date().getFullYear()} Matheus Correia · Nutrição</span>
-        <span>Routine Performance</span>
-        <a href={WHATSAPP} target="_blank" rel="noreferrer" className="hover:text-[var(--lime)]">
+    <footer className="bg-[var(--nearblack)] text-[var(--mute)] border-t border-[var(--ice)]/10">
+      <div className="container-x py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] uppercase tracking-[0.22em] font-display font-semibold">
+        <div className="flex items-center gap-3 text-[var(--ice)]">
+          <MCMark className="h-7 w-7 text-[var(--ice)]" />
+          <span>Matheus Correia / Nutrição</span>
+        </div>
+        <span>© {new Date().getFullYear()} · Routine Performance</span>
+        <a
+          href={WHATSAPP}
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-[var(--ice)] transition-colors"
+        >
           WhatsApp →
         </a>
       </div>
@@ -575,8 +801,9 @@ function Footer() {
 
 export function Landing() {
   return (
-    <main className="bg-[var(--cream)] text-[var(--ink)] selection:bg-[var(--lime)] selection:text-[var(--night)]">
+    <main className="bg-[var(--night)] text-[var(--ice)] selection:bg-[var(--ice)] selection:text-[var(--night)]">
       <Hero />
+      <CredibilityBar />
       <Pain />
       <Positioning />
       <Method />

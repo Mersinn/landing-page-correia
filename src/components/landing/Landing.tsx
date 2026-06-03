@@ -1,5 +1,7 @@
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import mcSymbolWhite from "@/assets/mc-symbol-white.svg.asset.json";
+import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
@@ -10,34 +12,16 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
 };
 
-/* -------------------- MC Monogram -------------------- */
-function MCMark({ className = "", title = "MC" }: { className?: string; title?: string }) {
+/* -------------------- MC Mark (real brand symbol) -------------------- */
+function MCMark({ className = "", title = "Matheus Correia" }: { className?: string; title?: string }) {
   return (
-    <svg
-      viewBox="0 0 120 120"
-      role="img"
+    <img
+      src={mcSymbolWhite.url}
+      alt={title}
       aria-label={title}
       className={className}
-      fill="none"
-    >
-      <rect x="2" y="2" width="116" height="116" rx="6" stroke="currentColor" strokeWidth="2" />
-      {/* M */}
-      <path
-        d="M22 86 V34 L42 70 L62 34 V86"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinejoin="miter"
-        strokeLinecap="square"
-      />
-      {/* C */}
-      <path
-        d="M100 42 C 92 32, 76 32, 72 46 C 68 60, 68 68, 72 78 C 76 90, 92 90, 100 82"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="square"
-        fill="none"
-      />
-    </svg>
+      draggable={false}
+    />
   );
 }
 

@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import mcSymbolWhite from "@/assets/mc-symbol-white.svg.asset.json";
 import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
@@ -6,6 +6,22 @@ import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+
+/* Shared parallax hook — desktop only, respects prefers-reduced-motion */
+function useParallax(ref: React.RefObject<HTMLElement | null>) {
+  const prefersReduced = useReducedMotion();
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mq.matches);
+    const h = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  return { y, enabled: isDesktop && !prefersReduced };
+}
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
@@ -35,27 +51,71 @@ function Cta({
   children: React.ReactNode;
   className?: string;
 }) {
+  const prefersReduced = useReducedMotion();
   const base =
-    "group inline-flex items-center justify-center gap-3 px-7 py-4 text-[12px] font-semibold tracking-[0.18em] uppercase transition-all duration-300 rounded-full";
-  const variants: Record<string, string> = {
-    ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--deep)] hover:text-[var(--ice)]",
-    outline:
-      "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)]",
-    ghostDark:
-      "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)]",
-  };
+    "group relative inline-flex items-center justify-center gap-3 px-7 py-4 text-[12px] font-semibold tracking-[0.18em] uppercase rounded-full overflow-hidden";
+
+  /* Reduced-motion or non-ice variants: simple Tailwind hover (CSS handles instant transition) */
+  if (variant !== "ice" || prefersReduced) {
+    const variantClass: Record<string, string> = {
+      ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--deep)] hover:text-[var(--ice)] transition-colors duration-300",
+      outline:
+        "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors duration-300",
+      ghostDark:
+        "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)] transition-colors duration-300",
+    };
+    return (
+      <a
+        href={WHATSAPP}
+        target="_blank"
+        rel="noreferrer"
+        className={`${base} ${variantClass[variant]} ${className}`}
+      >
+        {children}
+        <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+          →
+        </span>
+      </a>
+    );
+  }
+
+  /* Animated ice variant: circular fill expands from left on hover */
   return (
-    <a
+    <motion.a
       href={WHATSAPP}
       target="_blank"
       rel="noreferrer"
-      className={`${base} ${variants[variant]} ${className}`}
+      className={`${base} bg-[var(--ice)] text-[var(--night)] ${className}`}
+      whileHover="hover"
+      initial="rest"
     >
-      {children}
-      <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">
-        →
-      </span>
-    </a>
+      {/* Fill layer — pill-shaped, scales from left */}
+      <motion.span
+        aria-hidden
+        className="absolute inset-0 rounded-full bg-[var(--deep)]"
+        style={{ originX: 0 }}
+        variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+      />
+      {/* Text + arrow — sit above fill, swap colour on hover */}
+      <motion.span
+        className="relative z-10 flex items-center gap-3"
+        variants={{
+          rest: { color: "var(--night)" },
+          hover: { color: "var(--ice)" },
+        }}
+        transition={{ duration: 0.38 }}
+      >
+        {children}
+        <motion.span
+          aria-hidden
+          variants={{ rest: { x: 0 }, hover: { x: 4 } }}
+          transition={{ duration: 0.3 }}
+        >
+          →
+        </motion.span>
+      </motion.span>
+    </motion.a>
   );
 }
 
@@ -90,6 +150,24 @@ function Nav() {
 
 /* -------------------- Hero -------------------- */
 function Hero() {
+  const heroRef = useRef<HTMLElement>(null);
+  const prefersReduced = useReducedMotion();
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  const { scrollYProgress: heroScroll } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  /* Image drifts up as hero scrolls out — gradient at bottom hides any sub-pixel gap */
+  const parallaxY = useTransform(heroScroll, [0, 1], ["0%", "-8%"]);
+  const enableParallax = isDesktop && !prefersReduced;
+
   const headline = [
     "Nutrição para quem cansou",
     "de começar do zero",
@@ -97,6 +175,7 @@ function Hero() {
   ];
   return (
     <section
+      ref={heroRef}
       id="top"
       className="relative bg-[var(--night)] text-[var(--ice)] pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden"
     >
@@ -170,10 +249,11 @@ function Hero() {
             transition={{ duration: 1.3, delay: 0.5, ease }}
             className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
           >
-            <img
+            <motion.img
               src={matheusHero.url}
               alt="Matheus Correia, nutricionista"
-              className="absolute inset-0 h-full w-full object-cover object-center grayscale-[15%] contrast-[1.05]"
+              className="absolute inset-0 h-full w-full object-cover object-center grayscale-[15%] contrast-[1.05] scale-[1.12]"
+              style={enableParallax ? { y: parallaxY } : {}}
               draggable={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
@@ -504,32 +584,32 @@ function Method() {
 
 /* -------------------- Training + Nutrition -------------------- */
 function TrainingNutrition() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { y: photoY, enabled: parallaxOn } = useParallax(sectionRef);
   return (
-    <section className="bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+    <section ref={sectionRef} className="bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        {/* Typographic block stands in for real photo */}
+        {/* Arnold Sports photo */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, ease }}
-          className="lg:col-span-6 order-2 lg:order-1 relative aspect-[5/4] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden p-8 flex flex-col justify-between"
+          className="lg:col-span-6 order-2 lg:order-1 relative aspect-[5/4] bg-[var(--deep)] overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-[var(--nearblack)] via-[var(--deep)] to-[var(--nearblack)]" />
-          <MCMark
-            aria-hidden
-            className="absolute -right-12 -bottom-8 h-32 md:h-40 w-auto opacity-[0.08]"
+          <motion.img
+            src="/matheus-arnold.jpg"
+            alt="Matheus Correia no Arnold Sports Festival South America"
+            className="absolute inset-0 h-full w-full object-cover object-top scale-[1.12]"
+            style={parallaxOn ? { y: photoY } : {}}
+            draggable={false}
           />
-          <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold">
-            <span>Frame 02</span>
-            <span>Treino / Nutrição</span>
-          </div>
-          <div className="relative">
-            <p className="font-display font-extrabold text-5xl md:text-6xl lg:text-7xl leading-[0.95] tracking-[-0.045em] text-[var(--ice)]">
-              Estímulo<br />
-              <span className="text-[var(--mute)]">+</span><br />
-              Resultado
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/60 via-transparent to-transparent" />
+          <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
+            <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/80 font-display font-semibold">
+              Arnold Sports · South America
             </p>
+            <MCMark className="h-6 w-auto opacity-70" />
           </div>
         </motion.div>
 
@@ -553,8 +633,10 @@ function TrainingNutrition() {
 
 /* -------------------- Real Life -------------------- */
 function RealLife() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { y: photoY, enabled: parallaxOn } = useParallax(sectionRef);
   return (
-    <section className="bg-[var(--icebg)] text-[var(--night)] py-24 md:py-32">
+    <section ref={sectionRef} className="bg-[var(--icebg)] text-[var(--night)] py-24 md:py-32">
       <div className="container-x">
         <div className="flex items-center gap-3 mb-6">
           <span className="h-px w-10 bg-[var(--night)]/30" />
@@ -571,19 +653,37 @@ function RealLife() {
           <span className="text-[var(--night)]/50">o fim do seu resultado.</span>
         </motion.h2>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-          <div className="md:col-span-7 space-y-6 text-[var(--night)] text-lg leading-relaxed max-w-2xl">
-            <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
-            <p className="text-[var(--night)]/60">
-              Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes para que sua alimentação tenha liberdade sem virar bagunça.
-            </p>
-          </div>
-          <div className="md:col-span-5 md:pl-10 md:border-l border-[var(--night)]/20">
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          {/* Text content */}
+          <div className="lg:col-span-6 space-y-8">
+            <div className="space-y-6 text-[var(--night)] text-lg leading-relaxed">
+              <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
+              <p className="text-[var(--night)]/60">
+                Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes para que sua alimentação tenha liberdade sem virar bagunça.
+              </p>
+            </div>
             <h3 className="font-display font-extrabold text-3xl md:text-4xl tracking-[-0.04em]">
               O plano certo não te prende.
               <span className="block text-[var(--night)]/60">Ele te dá direção.</span>
             </h3>
           </div>
+
+          {/* Burger photo — dark drama against light section background */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease }}
+            className="lg:col-span-6 relative aspect-[3/4] overflow-hidden bg-[var(--night)]"
+          >
+            <motion.img
+              src="/matheus-burger.jpg"
+              alt="Matheus Correia — alimentação real com estratégia"
+              className="absolute inset-0 h-full w-full object-cover object-center scale-[1.12]"
+              style={parallaxOn ? { y: photoY } : {}}
+              draggable={false}
+            />
+          </motion.div>
         </div>
       </div>
     </section>

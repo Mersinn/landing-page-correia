@@ -610,8 +610,8 @@ function TrainingNutrition() {
           <motion.img
             src="/matheus-arnold.jpg"
             alt="Matheus Correia no Arnold Sports Festival South America"
-            className="absolute inset-0 h-full w-full object-cover object-top scale-[1.12]"
-            style={parallaxOn ? { y: photoY } : {}}
+            className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
+            style={parallaxOn ? { y: photoY, scale: 1.12 } : { scale: 1.06 }}
             draggable={false}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/60 via-transparent to-transparent" />
@@ -689,8 +689,8 @@ function RealLife() {
             <motion.img
               src="/matheus-burger.jpg"
               alt="Matheus Correia — alimentação real com estratégia"
-              className="absolute inset-0 h-full w-full object-cover object-center scale-[1.12]"
-              style={parallaxOn ? { y: photoY } : {}}
+              className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
+              style={parallaxOn ? { y: photoY, scale: 1.12 } : { scale: 1.06 }}
               draggable={false}
             />
           </motion.div>

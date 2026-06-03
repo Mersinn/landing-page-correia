@@ -624,6 +624,126 @@ function Method() {
 }
 
 /* -------------------- Training + Nutrition -------------------- */
+type MotionVal = ReturnType<typeof useTransform<number, string>> | ReturnType<typeof useTransform<number, number>>;
+
+function ImmersivePhoto({
+  src,
+  alt,
+  objectPos,
+  topCaption,
+  bottomCaption,
+  tagNumber,
+  className = "",
+  parallaxOn,
+  photoY,
+  frameY,
+  scale,
+  frameScale,
+  wipeX,
+  captionOpacity,
+}: {
+  src: string;
+  alt: string;
+  objectPos: string;
+  topCaption: string;
+  bottomCaption: string;
+  tagNumber: string;
+  className?: string;
+  parallaxOn: boolean;
+  photoY: MotionVal;
+  frameY: MotionVal;
+  scale: MotionVal;
+  frameScale: MotionVal;
+  wipeX: MotionVal;
+  captionOpacity: MotionVal;
+}) {
+  const imgStyle = parallaxOn
+    ? ({ y: photoY, scale } as unknown as CSSProperties)
+    : ({ scale: 1.04 } as unknown as CSSProperties);
+  const frameStyle = parallaxOn
+    ? ({ y: frameY, scale: frameScale } as unknown as CSSProperties)
+    : undefined;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 1.1, ease }}
+      className={className}
+    >
+      <motion.div
+        style={frameStyle}
+        className="relative aspect-[4/5] w-full will-change-transform"
+      >
+        {/* Thin frame ring */}
+        <div className="absolute -inset-px border border-[var(--ice)]/15 pointer-events-none z-20" />
+        {/* Corner tag */}
+        <div className="absolute -top-3 -left-3 z-30 hidden md:flex h-10 w-10 items-center justify-center bg-[var(--ice)] text-[var(--night)] font-display font-extrabold text-[11px] tracking-[0.18em]">
+          {tagNumber}
+        </div>
+
+        <div className="relative h-full w-full overflow-hidden bg-[var(--deep)]">
+          {/* Curtain reveal on enter */}
+          <motion.div
+            initial={{ scaleY: 1 }}
+            whileInView={{ scaleY: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 1.2, ease, delay: 0.1 }}
+            style={{ originY: 0 }}
+            className="absolute inset-0 z-10 bg-[var(--nearblack)]"
+            aria-hidden
+          />
+
+          <motion.img
+            src={src}
+            alt={alt}
+            initial={{ scale: 1.18, filter: "blur(8px)" }}
+            whileInView={{ scale: 1.04, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 1.6, ease, delay: 0.2 }}
+            className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover grayscale-[12%] contrast-[1.05] will-change-transform"
+            style={{ ...imgStyle, objectPosition: objectPos }}
+            draggable={false}
+          />
+
+          {/* Gradient depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/75 via-[var(--night)]/10 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[var(--night)]/40 z-10" />
+
+          {/* Wipe line traveling across on scroll */}
+          {parallaxOn && (
+            <motion.div
+              aria-hidden
+              style={{ x: wipeX } as unknown as CSSProperties}
+              className="absolute top-0 bottom-0 w-[40%] z-10 pointer-events-none bg-gradient-to-r from-transparent via-[var(--ice)]/8 to-transparent mix-blend-screen"
+            />
+          )}
+
+          {/* Top caption */}
+          <motion.div
+            style={parallaxOn ? ({ opacity: captionOpacity } as unknown as CSSProperties) : undefined}
+            className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold"
+          >
+            <span className="flex items-center gap-2">
+              <span className="h-px w-6 bg-[var(--ice)]/60" />
+              {topCaption}
+            </span>
+            <span>{bottomCaption}</span>
+          </motion.div>
+
+          {/* Bottom watermark */}
+          <div className="absolute bottom-5 left-5 right-5 z-20 flex items-end justify-between">
+            <MCMark className="h-7 w-auto opacity-80" />
+            <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
+              MC / Nutrição
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function TrainingNutrition() {
   const sectionRef = useRef<HTMLElement>(null);
   const {

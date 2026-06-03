@@ -19,14 +19,30 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Photo container is 130% tall — image travels up to 15% in each direction.
-   * Always fits inside its frame, never crops past it. */
-  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
-  /* Subtle counter-movement on foreground text */
-  const textY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  /* Very subtle breath on the photo */
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1.0, 1.04]);
-  return { y, textY, scale, enabled: isDesktop && !prefersReduced };
+  /* Deep parallax — image moves a lot inside its 130% container */
+  const y = useTransform(scrollYProgress, [0, 1], ["-18%", "18%"]);
+  /* Frame itself drifts subtly the OPPOSITE way for layered depth */
+  const frameY = useTransform(scrollYProgress, [0, 1], ["4%", "-4%"]);
+  /* Counter-movement on foreground text */
+  const textY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
+  /* Cinematic breath on the photo */
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.0, 1.08]);
+  /* Frame scale — zooms in slightly as it crosses center */
+  const frameScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 1.0, 0.98]);
+  /* Horizontal wipe line that travels across the image on scroll */
+  const wipeX = useTransform(scrollYProgress, [0, 1], ["-110%", "110%"]);
+  /* Caption opacity peaks in the middle */
+  const captionOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  return {
+    y,
+    frameY,
+    textY,
+    scale,
+    frameScale,
+    wipeX,
+    captionOpacity,
+    enabled: isDesktop && !prefersReduced,
+  };
 }
 
 const fadeUp: Variants = {

@@ -814,36 +814,38 @@ function TrainingNutrition() {
 /* -------------------- Real Life -------------------- */
 function RealLife() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { y: photoY, textY, scale, enabled: parallaxOn } = useParallax(sectionRef);
+  const {
+    y: photoY,
+    frameY,
+    textY,
+    scale,
+    frameScale,
+    wipeX,
+    captionOpacity,
+    enabled: parallaxOn,
+  } = useParallax(sectionRef);
   return (
     <section
       ref={sectionRef}
       className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden py-20 md:py-28 lg:py-32"
     >
       <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-        {/* Photo first on desktop — burger frame fully visible */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 1.1, ease }}
+        <ImmersivePhoto
+          src="/matheus-burger.jpg"
+          alt="Matheus Correia — alimentação real com estratégia"
+          objectPos="center 40%"
+          topCaption="Vida real"
+          bottomCaption="Estratégia · não proibição"
+          tagNumber="06"
           className="lg:col-span-6"
-        >
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
-            <motion.img
-              src="/matheus-burger.jpg"
-              alt="Matheus Correia — alimentação real com estratégia"
-              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_40%] grayscale-[12%] contrast-[1.05] will-change-transform"
-              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-              draggable={false}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
-              <span>Vida real</span>
-              <span>Estratégia · não proibição</span>
-            </div>
-          </div>
-        </motion.div>
+          parallaxOn={parallaxOn}
+          photoY={photoY}
+          frameY={frameY}
+          scale={scale}
+          frameScale={frameScale}
+          wipeX={wipeX}
+          captionOpacity={captionOpacity}
+        />
 
         {/* Text */}
         <motion.div

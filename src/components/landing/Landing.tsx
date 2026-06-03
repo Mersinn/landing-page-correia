@@ -264,8 +264,8 @@ function Hero() {
             <motion.img
               src={matheusHero.url}
               alt="Matheus Correia, nutricionista"
-              className="absolute inset-0 h-full w-full object-cover object-[center_28%] grayscale-[15%] contrast-[1.05]"
-              style={enableParallax ? { y: parallaxY, scale: 1.15 } : { scale: 1.08, transformOrigin: "center" }}
+              className="absolute inset-0 h-full w-full object-cover object-[center_22%] grayscale-[15%] contrast-[1.05]"
+              style={enableParallax ? { y: parallaxY, scale: 1.2 } : { scale: 1.08, transformOrigin: "center" }}
               draggable={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />

@@ -19,7 +19,8 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  /* Lower amplitude so the photo never reveals the empty container edge */
+  const y = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
   return { y, enabled: isDesktop && !prefersReduced };
 }
 
@@ -171,7 +172,6 @@ function Hero() {
   const headline = [
     "Nutrição para quem cansou",
     "de começar do zero",
-    "toda segunda-feira.",
   ];
   return (
     <section
@@ -212,6 +212,16 @@ function Hero() {
                 </motion.span>
               </span>
             ))}
+            <span className="block overflow-hidden">
+              <motion.span
+                initial={{ y: "110%" }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.95, delay: 0.15 + headline.length * 0.12, ease }}
+                className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] tracking-[-0.02em] mt-2 md:mt-4"
+              >
+                toda segunda-feira.
+              </motion.span>
+            </span>
           </h1>
 
           <motion.p
@@ -252,8 +262,8 @@ function Hero() {
             <motion.img
               src={matheusHero.url}
               alt="Matheus Correia, nutricionista"
-              className="absolute inset-0 h-full w-full object-cover object-center grayscale-[15%] contrast-[1.05] scale-[1.12]"
-              style={enableParallax ? { y: parallaxY } : {}}
+              className="absolute inset-0 h-full w-full object-cover object-[center_28%] grayscale-[15%] contrast-[1.05]"
+              style={enableParallax ? { y: parallaxY, scale: 1.15 } : { scale: 1.08, transformOrigin: "center" }}
               draggable={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />

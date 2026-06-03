@@ -322,40 +322,48 @@ function CredibilityBar() {
 
 /* -------------------- Pain / Manifesto -------------------- */
 function Pain() {
-  const lines = [
-    "Você até começa bem.",
-    "Mas a rotina te engole.",
-    "Você sabe o que tem que fazer.",
-    "Mas não consegue sustentar.",
-    "Você não falha porque gosta de comer.",
-    "Você falha porque o plano não foi feito para a sua vida.",
+  /* Three structured pairs: situação → razão. Same grid for every pair
+   * keeps a clean rhythm instead of six floating lines. */
+  const pairs = [
+    { a: "Você até começa bem.", b: "Mas a rotina te engole." },
+    { a: "Você sabe o que tem que fazer.", b: "Mas não consegue sustentar." },
+    {
+      a: "Você não falha porque gosta de comer.",
+      b: "Falha porque o plano não foi feito para a sua vida.",
+    },
   ];
   return (
-    <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
+    <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-20 md:py-28 overflow-hidden">
       <MCMark
         aria-hidden
         className="pointer-events-none select-none absolute -left-32 top-1/2 -translate-y-1/2 h-[360px] md:h-[460px] w-auto opacity-[0.04]"
       />
       <div className="container-x relative">
-        <div className="flex items-center gap-3 mb-12">
+        <div className="flex items-center gap-3 mb-10 md:mb-14">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
           <p className="eyebrow text-[var(--mute)]">Por que você sempre recomeça</p>
         </div>
 
-        <div className="max-w-4xl space-y-2 md:space-y-3">
-          {lines.map((line, i) => (
-            <motion.h2
+        <div className="max-w-5xl divide-y divide-[var(--ice)]/10 border-y border-[var(--ice)]/10">
+          {pairs.map((p, i) => (
+            <motion.div
               key={i}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, delay: i * 0.08, ease }}
-              className={`font-display font-extrabold text-3xl md:text-5xl lg:text-6xl leading-[1.02] tracking-[-0.035em] ${
-                i % 2 === 1 ? "text-[var(--mute)] pl-6 md:pl-16" : "text-[var(--ice)]"
-              }`}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.8, delay: i * 0.12, ease }}
+              className="grid grid-cols-12 gap-6 md:gap-10 py-8 md:py-12 items-baseline"
             >
-              {line}
-            </motion.h2>
+              <span className="col-span-12 md:col-span-1 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold tabular-nums">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h2 className="col-span-12 md:col-span-5 font-display font-extrabold text-2xl md:text-4xl lg:text-5xl leading-[1.02] tracking-[-0.035em] text-[var(--ice)]">
+                {p.a}
+              </h2>
+              <p className="col-span-12 md:col-span-6 font-display font-medium text-xl md:text-2xl lg:text-3xl leading-[1.15] tracking-[-0.02em] text-[var(--mute)]">
+                {p.b}
+              </p>
+            </motion.div>
           ))}
         </div>
 
@@ -364,7 +372,7 @@ function Pain() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 1, delay: 0.2, ease }}
-          className="mt-24 md:mt-36 border-t border-[var(--ice)]/15 pt-12 md:pt-16"
+          className="mt-20 md:mt-28"
         >
           <p className="eyebrow text-[var(--mute)] mb-6">A virada</p>
           <h3 className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">

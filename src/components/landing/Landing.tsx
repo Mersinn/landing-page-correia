@@ -366,56 +366,87 @@ function Pain() {
 
 /* -------------------- Positioning -------------------- */
 function Positioning() {
+  const blocks = [
+    {
+      n: "01",
+      label: "Diagnóstico",
+      text: "Sua rotina, seus horários, seu treino, sua fome, suas preferências e o que já falhou antes.",
+    },
+    {
+      n: "02",
+      label: "Estratégia",
+      text: "Um plano construído com comida de verdade, ajustes e protocolo — não uma dieta perfeita no papel.",
+    },
+    {
+      n: "03",
+      label: "Continuidade",
+      text: "Acompanhamento que tira você do ciclo de começa na segunda e desiste na sexta.",
+    },
+  ];
   return (
-    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-20 md:py-24">
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-5">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">Individualidade</p>
+    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+      <div className="container-x">
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-16 md:mb-24">
+          <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, ease }}
+              className="flex items-center gap-3 mb-8"
+            >
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Individualidade</p>
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.7, ease }}
+              className="font-display font-extrabold text-[40px] md:text-6xl lg:text-[80px] leading-[0.95] tracking-[-0.045em]"
+            >
+              O acompanhamento não começa com um cardápio.
+              <span className="block text-[var(--mute)]">Começa entendendo você.</span>
+            </motion.h2>
           </div>
-          <motion.h2
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[1.0] tracking-[-0.04em]"
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.7, delay: 0.15, ease }}
+            className="lg:col-span-5 lg:pt-4 self-end"
           >
-            O acompanhamento não começa com um cardápio.
-            <span className="block text-[var(--mute)]">Começa entendendo você.</span>
-          </motion.h2>
+            <p className="text-base md:text-lg text-[var(--mute)] leading-relaxed max-w-md lg:ml-auto">
+              Sua rotina é única. Seu plano alimentar também precisa ser — com estratégia, comida de verdade e ajustes contínuos.
+            </p>
+          </motion.div>
         </div>
-        <div className="lg:col-span-7 lg:pl-12 lg:border-l border-[var(--ice)]/15">
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="text-lg md:text-xl text-[var(--ice)] leading-relaxed"
-          >
-            Sua rotina, seus horários, seu treino, sua fome, suas preferências, suas dificuldades e o que já falhou antes.
-          </motion.p>
 
-          <motion.h3
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="mt-12 font-display font-bold text-2xl md:text-3xl tracking-[-0.03em]"
-          >
-            Sua rotina é única.
-            <span className="block text-[var(--mute)]">Seu plano alimentar também precisa ser.</span>
-          </motion.h3>
-
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="mt-8 text-base md:text-lg text-[var(--mute)] leading-relaxed max-w-2xl"
-          >
-            O trabalho do Matheus Correia é construir um plano alimentar com estratégia — não uma dieta perfeita no papel. Um plano que encaixa comida de verdade, preferências, ajustes e protocolo para você continuar evoluindo sem viver no ciclo de começa na segunda e desiste na sexta.
-          </motion.p>
+        {/* Three structured blocks */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--ice)]/10 border border-[var(--ice)]/10">
+          {blocks.map((b, i) => (
+            <motion.div
+              key={b.n}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.6, delay: i * 0.08, ease }}
+              className="bg-[var(--deep)] p-8 md:p-10"
+            >
+              <div className="flex items-baseline justify-between mb-6">
+                <span className="font-display font-extrabold text-5xl md:text-6xl tabular-nums tracking-[-0.04em] text-[var(--ice)]">
+                  {b.n}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+                  {b.label}
+                </span>
+              </div>
+              <p className="text-[var(--ice)]/85 text-base md:text-[17px] leading-relaxed">
+                {b.text}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

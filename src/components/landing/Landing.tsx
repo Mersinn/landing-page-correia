@@ -166,7 +166,7 @@ function Hero() {
     offset: ["start start", "end start"],
   });
   /* Image drifts up as hero scrolls out — gradient at bottom hides any sub-pixel gap */
-  const parallaxY = useTransform(heroScroll, [0, 1], ["0%", "-8%"]);
+  const parallaxY = useTransform(heroScroll, [0, 1], ["0%", "-6%"]);
   const enableParallax = isDesktop && !prefersReduced;
 
   const headline = [
@@ -480,7 +480,7 @@ function Method() {
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative overflow-hidden">
+    <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative">
       <MCMark
         aria-hidden
         className="pointer-events-none select-none absolute -left-32 -top-16 h-[280px] md:h-[360px] w-auto opacity-[0.05]"

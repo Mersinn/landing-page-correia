@@ -19,14 +19,13 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Strong, visible parallax — image travels in the opposite direction of scroll.
-   * Photo container is 140% tall, so this 40% range never reveals the edge. */
-  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
-  /* Counter-parallax for foreground text — moves the OPPOSITE way, slower,
-   * creating real depth between photo and copy. */
-  const textY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
-  /* Subtle scale breath on the photo as the section passes through viewport */
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.0, 1.08]);
+  /* Photo container is 130% tall — image travels up to 15% in each direction.
+   * Always fits inside its frame, never crops past it. */
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+  /* Subtle counter-movement on foreground text */
+  const textY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
+  /* Very subtle breath on the photo */
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1.0, 1.04]);
   return { y, textY, scale, enabled: isDesktop && !prefersReduced };
 }
 
@@ -185,7 +184,7 @@ function Hero() {
     <section
       ref={heroRef}
       id="top"
-      className="relative bg-[var(--night)] text-[var(--ice)] pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden"
+      className="relative bg-[var(--night)] text-[var(--ice)] pt-24 md:pt-28 pb-16 md:pb-24 overflow-hidden"
     >
       <Nav />
 
@@ -195,13 +194,13 @@ function Hero() {
         className="pointer-events-none select-none absolute -right-24 -bottom-16 h-[320px] md:h-[420px] w-auto opacity-[0.05]"
       />
 
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end relative">
+      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start relative">
         <div className="lg:col-span-7">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 mb-10"
+            className="flex items-center gap-3 mb-6 md:mb-8"
           >
             <span className="h-px w-10 bg-[var(--ice)]/40" />
             <p className="eyebrow text-[var(--ice)]/60">Nutrição Clínica · Esportiva</p>
@@ -323,40 +322,48 @@ function CredibilityBar() {
 
 /* -------------------- Pain / Manifesto -------------------- */
 function Pain() {
-  const lines = [
-    "Você até começa bem.",
-    "Mas a rotina te engole.",
-    "Você sabe o que tem que fazer.",
-    "Mas não consegue sustentar.",
-    "Você não falha porque gosta de comer.",
-    "Você falha porque o plano não foi feito para a sua vida.",
+  /* Three structured pairs: situação → razão. Same grid for every pair
+   * keeps a clean rhythm instead of six floating lines. */
+  const pairs = [
+    { a: "Você até começa bem.", b: "Mas a rotina te engole." },
+    { a: "Você sabe o que tem que fazer.", b: "Mas não consegue sustentar." },
+    {
+      a: "Você não falha porque gosta de comer.",
+      b: "Falha porque o plano não foi feito para a sua vida.",
+    },
   ];
   return (
-    <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
+    <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-20 md:py-28 overflow-hidden">
       <MCMark
         aria-hidden
         className="pointer-events-none select-none absolute -left-32 top-1/2 -translate-y-1/2 h-[360px] md:h-[460px] w-auto opacity-[0.04]"
       />
       <div className="container-x relative">
-        <div className="flex items-center gap-3 mb-12">
+        <div className="flex items-center gap-3 mb-10 md:mb-14">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
           <p className="eyebrow text-[var(--mute)]">Por que você sempre recomeça</p>
         </div>
 
-        <div className="max-w-4xl space-y-2 md:space-y-3">
-          {lines.map((line, i) => (
-            <motion.h2
+        <div className="max-w-5xl divide-y divide-[var(--ice)]/10 border-y border-[var(--ice)]/10">
+          {pairs.map((p, i) => (
+            <motion.div
               key={i}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ duration: 0.8, delay: i * 0.08, ease }}
-              className={`font-display font-extrabold text-3xl md:text-5xl lg:text-6xl leading-[1.02] tracking-[-0.035em] ${
-                i % 2 === 1 ? "text-[var(--mute)] pl-6 md:pl-16" : "text-[var(--ice)]"
-              }`}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.8, delay: i * 0.12, ease }}
+              className="grid grid-cols-12 gap-6 md:gap-10 py-8 md:py-12 items-baseline"
             >
-              {line}
-            </motion.h2>
+              <span className="col-span-12 md:col-span-1 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold tabular-nums">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h2 className="col-span-12 md:col-span-5 font-display font-extrabold text-2xl md:text-4xl lg:text-5xl leading-[1.02] tracking-[-0.035em] text-[var(--ice)]">
+                {p.a}
+              </h2>
+              <p className="col-span-12 md:col-span-6 font-display font-medium text-xl md:text-2xl lg:text-3xl leading-[1.15] tracking-[-0.02em] text-[var(--mute)]">
+                {p.b}
+              </p>
+            </motion.div>
           ))}
         </div>
 
@@ -365,7 +372,7 @@ function Pain() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 1, delay: 0.2, ease }}
-          className="mt-24 md:mt-36 border-t border-[var(--ice)]/15 pt-12 md:pt-16"
+          className="mt-20 md:mt-28"
         >
           <p className="eyebrow text-[var(--mute)] mb-6">A virada</p>
           <h3 className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
@@ -392,7 +399,7 @@ function Pain() {
 /* -------------------- Positioning -------------------- */
 function Positioning() {
   return (
-    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-20 md:py-24">
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
@@ -607,26 +614,13 @@ function TrainingNutrition() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden min-h-[110vh] flex items-end lg:items-center"
+      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden py-20 md:py-28 lg:py-32"
     >
-      {/* Full-bleed parallax photo — image is 140% tall so the 40% travel never reveals edges */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.img
-          src="/matheus-arnold.jpg"
-          alt="Matheus Correia no Arnold Sports Festival South America"
-          className="absolute left-0 right-0 -top-[20%] h-[140%] w-full object-cover object-[center_30%] will-change-transform"
-          style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-          draggable={false}
-        />
-        {/* Soft vignette only — photo stays visible across the section */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)]/85 via-[var(--night)]/25 to-transparent lg:from-[var(--night)]/90 lg:via-[var(--night)]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/80 via-transparent to-[var(--night)]/40" />
-      </div>
-
-      <div className="container-x relative w-full grid grid-cols-1 lg:grid-cols-12 gap-8 py-20 md:py-28 lg:py-40">
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Text */}
         <motion.div
           style={parallaxOn ? { y: textY } : undefined}
-          className="lg:col-span-6 xl:col-span-5"
+          className="lg:col-span-6 order-2 lg:order-1"
         >
           <motion.div
             initial={{ opacity: 0, y: 32 }}
@@ -638,17 +632,41 @@ function TrainingNutrition() {
               <span className="h-px w-10 bg-[var(--ice)]/40" />
               <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
             </div>
-            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[56px] leading-[0.98] tracking-[-0.045em]">
+            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em]">
               A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
               <span className="block">A nutrição constrói o resultado.</span>
             </h2>
-            <p className="mt-6 md:mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-md">
+            <p className="mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
               Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço aparecer no corpo.
             </p>
             <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
               Arnold Sports · South America
             </p>
           </motion.div>
+        </motion.div>
+
+        {/* Photo — own portrait frame, parallax stays inside */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.1, ease }}
+          className="lg:col-span-6 order-1 lg:order-2"
+        >
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
+            <motion.img
+              src="/matheus-arnold.jpg"
+              alt="Matheus Correia no Arnold Sports Festival South America"
+              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_25%] grayscale-[12%] contrast-[1.05] will-change-transform"
+              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
+              <span>Arnold · 2024</span>
+              <span>Treino · Performance</span>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -662,47 +680,60 @@ function RealLife() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden min-h-[110vh] flex items-end"
+      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden py-20 md:py-28 lg:py-32"
     >
-      {/* Full-bleed parallax photo dominates the top ~60% of the section */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.img
-          src="/matheus-burger.jpg"
-          alt="Matheus Correia — alimentação real com estratégia"
-          className="absolute left-0 right-0 -top-[20%] h-[140%] w-full object-cover object-[center_45%] will-change-transform"
-          style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-          draggable={false}
-        />
-        {/* Only the bottom band darkens — photo breathes in the upper 55% */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--night)_0%,var(--night)_28%,rgba(5,6,7,0.55)_55%,transparent_78%)]" />
-      </div>
-
-      <div className="container-x relative w-full pb-16 md:pb-24 pt-[55vh] md:pt-[60vh]">
-        <motion.div style={parallaxOn ? { y: textY } : undefined}>
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">Vida real</p>
-          </div>
-          <motion.h2
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[64px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)] max-w-4xl"
-          >
-            Hambúrguer, chocolate e vida social{" "}
-            <span className="text-[var(--mute)]">não precisam ser o fim do seu resultado.</span>
-          </motion.h2>
-
-          <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 max-w-5xl">
-            <div className="lg:col-span-7 space-y-4 text-[var(--ice)]/80 text-base md:text-lg leading-relaxed">
-              <p>O problema não é uma refeição fora do plano. É não ter estratégia para lidar com ela.</p>
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Photo first on desktop — burger frame fully visible */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.1, ease }}
+          className="lg:col-span-6"
+        >
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
+            <motion.img
+              src="/matheus-burger.jpg"
+              alt="Matheus Correia — alimentação real com estratégia"
+              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_40%] grayscale-[12%] contrast-[1.05] will-change-transform"
+              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
+              <span>Vida real</span>
+              <span>Estratégia · não proibição</span>
             </div>
-            <h3 className="lg:col-span-5 font-display font-bold text-xl md:text-2xl tracking-[-0.03em] leading-[1.1] self-end">
+          </div>
+        </motion.div>
+
+        {/* Text */}
+        <motion.div
+          style={parallaxOn ? { y: textY } : undefined}
+          className="lg:col-span-6"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, ease }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Vida real</p>
+            </div>
+            <h2 className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
+              Hambúrguer, chocolate e vida social{" "}
+              <span className="text-[var(--mute)]">não precisam ser o fim do seu resultado.</span>
+            </h2>
+            <p className="mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
+              O problema não é uma refeição fora do plano. É não ter estratégia para lidar com ela.
+            </p>
+            <h3 className="mt-10 font-display font-bold text-xl md:text-2xl tracking-[-0.03em] leading-[1.15]">
               O plano certo não te prende.
               <span className="block text-[var(--mute)]">Te dá direção.</span>
             </h3>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

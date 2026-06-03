@@ -19,8 +19,8 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Lower amplitude so the photo never reveals the empty container edge */
-  const y = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
+  /* Strong, visible parallax — image is scaled 1.3 to absorb the travel */
+  const y = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"]);
   return { y, enabled: isDesktop && !prefersReduced };
 }
 
@@ -264,8 +264,8 @@ function Hero() {
             <motion.img
               src={matheusHero.url}
               alt="Matheus Correia, nutricionista"
-              className="absolute inset-0 h-full w-full object-cover object-[center_28%] grayscale-[15%] contrast-[1.05]"
-              style={enableParallax ? { y: parallaxY, scale: 1.15 } : { scale: 1.08, transformOrigin: "center" }}
+              className="absolute inset-0 h-full w-full object-cover object-[center_22%] grayscale-[15%] contrast-[1.05]"
+              style={enableParallax ? { y: parallaxY, scale: 1.2 } : { scale: 1.08, transformOrigin: "center" }}
               draggable={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
@@ -299,7 +299,7 @@ function CredibilityBar() {
   return (
     <section className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10">
       <div className="container-x py-8 md:py-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
-        <p className="eyebrow text-[var(--mute)] md:whitespace-nowrap">Aprofundamento</p>
+        <p className="eyebrow text-[var(--mute)] md:whitespace-nowrap">Áreas de atuação</p>
         <div className="flex flex-wrap gap-2 md:gap-3">
           {CHIPS.map((c) => (
             <span
@@ -334,7 +334,7 @@ function Pain() {
       <div className="container-x relative">
         <div className="flex items-center gap-3 mb-12">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">02 — Identificação</p>
+          <p className="eyebrow text-[var(--mute)]">Por que você sempre recomeça</p>
         </div>
 
         <div className="max-w-4xl space-y-2 md:space-y-3">
@@ -361,7 +361,7 @@ function Pain() {
           transition={{ duration: 1, delay: 0.2, ease }}
           className="mt-24 md:mt-36 border-t border-[var(--ice)]/15 pt-12 md:pt-16"
         >
-          <p className="eyebrow text-[var(--mute)] mb-6">Tese</p>
+          <p className="eyebrow text-[var(--mute)] mb-6">A virada</p>
           <h3 className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
             Você não precisa de culpa.
           </h3>
@@ -391,7 +391,7 @@ function Positioning() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">03 — Individualidade</p>
+            <p className="eyebrow text-[var(--mute)]">Individualidade</p>
           </div>
           <motion.h2
             variants={fadeUp}
@@ -490,14 +490,14 @@ function Method() {
       <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
         <div className="flex items-center gap-3 mb-6">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">04 — Método</p>
+          <p className="eyebrow text-[var(--mute)]">Método</p>
         </div>
-        <p className="font-display font-semibold text-xs md:text-sm uppercase tracking-[0.24em] text-[var(--mute)]">
-          Flexível não significa sem método. / Rígido não significa eficiente.
-        </p>
-        <h2 className="mt-6 font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
+        <h2 className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
           Um plano feito para sair do papel.
         </h2>
+        <p className="mt-6 max-w-2xl font-narrow italic text-[var(--mute)] text-lg md:text-xl leading-snug">
+          Flexível não significa sem método. Rígido não significa eficiente.
+        </p>
       </div>
 
       {/* Desktop sticky scroll */}
@@ -599,45 +599,47 @@ function TrainingNutrition() {
   const sectionRef = useRef<HTMLElement>(null);
   const { y: photoY, enabled: parallaxOn } = useParallax(sectionRef);
   return (
-    <section ref={sectionRef} className="bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        {/* Arnold Sports photo */}
-        <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, ease }}
-          className="lg:col-span-6 order-2 lg:order-1 relative aspect-[5/4] bg-[var(--deep)] overflow-hidden"
-        >
-          <motion.img
-            src="/matheus-arnold.jpg"
-            alt="Matheus Correia no Arnold Sports Festival South America"
-            className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
-            style={parallaxOn ? { y: photoY, scale: 1.12 } : { scale: 1.06 }}
-            draggable={false}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/60 via-transparent to-transparent" />
-          <div className="absolute bottom-4 left-5 right-5 flex items-end justify-between">
-            <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/80 font-display font-semibold">
-              Arnold Sports · South America
-            </p>
-            <MCMark className="h-6 w-auto opacity-70" />
-          </div>
-        </motion.div>
+    <section
+      ref={sectionRef}
+      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden min-h-[100vh] flex items-center"
+    >
+      {/* Full-bleed parallax photo */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.img
+          src="/matheus-arnold.jpg"
+          alt="Matheus Correia no Arnold Sports Festival South America"
+          className="absolute inset-0 h-[125%] w-full object-cover object-[center_25%]"
+          style={parallaxOn ? { y: photoY, scale: 1.05 } : { scale: 1.02 }}
+          draggable={false}
+        />
+        {/* Dark gradient overlay — readable text on left, photo breathes on right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)] via-[var(--night)]/85 to-[var(--night)]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)] via-transparent to-transparent" />
+      </div>
 
-        <div className="lg:col-span-6 order-1 lg:order-2">
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 py-28 md:py-40">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 1, ease }}
+          className="lg:col-span-7"
+        >
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">05 — Treino + Nutrição</p>
+            <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[0.98] tracking-[-0.045em]">
             A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
             <span className="block">A nutrição constrói o resultado.</span>
           </h2>
-          <p className="mt-8 text-[var(--mute)] text-lg leading-relaxed max-w-xl">
-            Se você já está fazendo esforço na academia, sua alimentação precisa trabalhar junto. A nutrição organiza energia, proteína, recuperação e consistência para esse esforço aparecer no corpo.
+          <p className="mt-8 text-[var(--ice)]/80 text-lg leading-relaxed max-w-xl">
+            Se você já está fazendo esforço na academia, sua alimentação precisa trabalhar junto. A nutrição organiza energia, proteína, recuperação e consistência — para esse esforço aparecer no corpo.
           </p>
-        </div>
+          <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+            Arnold Sports · South America
+          </p>
+        </motion.div>
       </div>
     </section>
   );
@@ -648,54 +650,51 @@ function RealLife() {
   const sectionRef = useRef<HTMLElement>(null);
   const { y: photoY, enabled: parallaxOn } = useParallax(sectionRef);
   return (
-    <section ref={sectionRef} className="bg-[var(--icebg)] text-[var(--night)] py-24 md:py-32">
-      <div className="container-x">
+    <section
+      ref={sectionRef}
+      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden min-h-[100vh] flex items-end"
+    >
+      {/* Full-bleed parallax photo */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.img
+          src="/matheus-burger.jpg"
+          alt="Matheus Correia — alimentação real com estratégia"
+          className="absolute inset-0 h-[125%] w-full object-cover object-[center_40%]"
+          style={parallaxOn ? { y: photoY, scale: 1.05 } : { scale: 1.02 }}
+          draggable={false}
+        />
+        {/* Gradient from bottom up — text sits in a readable pool */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)] via-[var(--night)]/70 to-[var(--night)]/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)]/60 via-transparent to-transparent" />
+      </div>
+
+      <div className="container-x relative py-28 md:py-40 w-full">
         <div className="flex items-center gap-3 mb-6">
-          <span className="h-px w-10 bg-[var(--night)]/30" />
-          <p className="eyebrow text-[var(--night)]/60">06 — Vida real</p>
+          <span className="h-px w-10 bg-[var(--ice)]/40" />
+          <p className="eyebrow text-[var(--mute)]">Vida real</p>
         </div>
         <motion.h2
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
-          className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[0.98] tracking-[-0.045em] text-[var(--night)] max-w-5xl"
+          className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)] max-w-5xl"
         >
           Hambúrguer, chocolate e vida social não precisam ser{" "}
-          <span className="text-[var(--night)]/50">o fim do seu resultado.</span>
+          <span className="text-[var(--mute)]">o fim do seu resultado.</span>
         </motion.h2>
 
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-          {/* Text content */}
-          <div className="lg:col-span-6 space-y-8">
-            <div className="space-y-6 text-[var(--night)] text-lg leading-relaxed">
-              <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
-              <p className="text-[var(--night)]/60">
-                Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes para que sua alimentação tenha liberdade sem virar bagunça.
-              </p>
-            </div>
-            <h3 className="font-display font-extrabold text-3xl md:text-4xl tracking-[-0.04em]">
-              O plano certo não te prende.
-              <span className="block text-[var(--night)]/60">Ele te dá direção.</span>
-            </h3>
+        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 max-w-5xl">
+          <div className="lg:col-span-7 space-y-5 text-[var(--ice)]/85 text-lg leading-relaxed">
+            <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
+            <p className="text-[var(--mute)]">
+              Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes — para sua alimentação ter liberdade sem virar bagunça.
+            </p>
           </div>
-
-          {/* Burger photo — dark drama against light section background */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, ease }}
-            className="lg:col-span-6 relative aspect-[3/4] overflow-hidden bg-[var(--night)]"
-          >
-            <motion.img
-              src="/matheus-burger.jpg"
-              alt="Matheus Correia — alimentação real com estratégia"
-              className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
-              style={parallaxOn ? { y: photoY, scale: 1.12 } : { scale: 1.06 }}
-              draggable={false}
-            />
-          </motion.div>
+          <h3 className="lg:col-span-5 font-display font-extrabold text-2xl md:text-3xl tracking-[-0.035em] leading-[1.05] self-end">
+            O plano certo não te prende.
+            <span className="block text-[var(--mute)]">Ele te dá direção.</span>
+          </h3>
         </div>
       </div>
     </section>
@@ -722,7 +721,7 @@ function Services() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">07 — Serviços + Sobre</p>
+          <p className="eyebrow text-[var(--mute)]">Serviços</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Um trabalho,<br />vários objetivos.
@@ -785,7 +784,7 @@ function Faq() {
         <div className="lg:col-span-4">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">08 — Perguntas</p>
+          <p className="eyebrow text-[var(--mute)]">Perguntas frequentes</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Antes da primeira consulta.

@@ -299,7 +299,7 @@ function CredibilityBar() {
   return (
     <section className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10">
       <div className="container-x py-8 md:py-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
-        <p className="eyebrow text-[var(--mute)] md:whitespace-nowrap">Aprofundamento</p>
+        <p className="eyebrow text-[var(--mute)] md:whitespace-nowrap">Áreas de atuação</p>
         <div className="flex flex-wrap gap-2 md:gap-3">
           {CHIPS.map((c) => (
             <span
@@ -721,7 +721,7 @@ function Services() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">07 — Serviços + Sobre</p>
+          <p className="eyebrow text-[var(--mute)]">Serviços</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Um trabalho,<br />vários objetivos.
@@ -784,7 +784,7 @@ function Faq() {
         <div className="lg:col-span-4">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">08 — Perguntas</p>
+          <p className="eyebrow text-[var(--mute)]">Perguntas frequentes</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Antes da primeira consulta.

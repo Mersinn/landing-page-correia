@@ -334,7 +334,7 @@ function Pain() {
       <div className="container-x relative">
         <div className="flex items-center gap-3 mb-12">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">02 — Identificação</p>
+          <p className="eyebrow text-[var(--mute)]">Por que você sempre recomeça</p>
         </div>
 
         <div className="max-w-4xl space-y-2 md:space-y-3">
@@ -361,7 +361,7 @@ function Pain() {
           transition={{ duration: 1, delay: 0.2, ease }}
           className="mt-24 md:mt-36 border-t border-[var(--ice)]/15 pt-12 md:pt-16"
         >
-          <p className="eyebrow text-[var(--mute)] mb-6">Tese</p>
+          <p className="eyebrow text-[var(--mute)] mb-6">A virada</p>
           <h3 className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
             Você não precisa de culpa.
           </h3>

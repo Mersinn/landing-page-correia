@@ -626,7 +626,16 @@ function Method() {
 /* -------------------- Training + Nutrition -------------------- */
 function TrainingNutrition() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { y: photoY, textY, scale, enabled: parallaxOn } = useParallax(sectionRef);
+  const {
+    y: photoY,
+    frameY,
+    textY,
+    scale,
+    frameScale,
+    wipeX,
+    captionOpacity,
+    enabled: parallaxOn,
+  } = useParallax(sectionRef);
   return (
     <section
       ref={sectionRef}
@@ -661,29 +670,22 @@ function TrainingNutrition() {
           </motion.div>
         </motion.div>
 
-        {/* Photo — own portrait frame, parallax stays inside */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 1.1, ease }}
+        <ImmersivePhoto
+          src="/matheus-arnold.jpg"
+          alt="Matheus Correia no Arnold Sports Festival South America"
+          objectPos="center 25%"
+          topCaption="Arnold · 2024"
+          bottomCaption="Treino · Performance"
+          tagNumber="05"
           className="lg:col-span-6 order-1 lg:order-2"
-        >
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
-            <motion.img
-              src="/matheus-arnold.jpg"
-              alt="Matheus Correia no Arnold Sports Festival South America"
-              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_25%] grayscale-[12%] contrast-[1.05] will-change-transform"
-              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-              draggable={false}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
-              <span>Arnold · 2024</span>
-              <span>Treino · Performance</span>
-            </div>
-          </div>
-        </motion.div>
+          parallaxOn={parallaxOn}
+          photoY={photoY}
+          frameY={frameY}
+          scale={scale}
+          frameScale={frameScale}
+          wipeX={wipeX}
+          captionOpacity={captionOpacity}
+        />
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, type CSSProperties } from "react";
 import mcSymbolWhite from "@/assets/mc-symbol-white.svg.asset.json";
 import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
 

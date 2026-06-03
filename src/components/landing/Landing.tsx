@@ -1,9 +1,16 @@
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect, type CSSProperties } from "react";
-import mcSymbolWhite from "@/assets/mc-symbol-white.svg.asset.json";
-import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
+
+/* Stable local asset paths (no bundler/runtime asset indirection).
+ * Drop the real files in /public to replace the controlled fallbacks. */
+const HERO_IMAGE = "/matheus-hero.jpg";
+const MC_SYMBOL_WHITE = "/mc-symbol-white.svg";
+
+/* Shared visible-focus ring for keyboard users — brandpack colours only */
+const focusRing =
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ice)]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--night)] rounded-sm";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -51,14 +58,28 @@ const fadeUp: Variants = {
 };
 
 /* -------------------- MC Mark (real brand symbol) -------------------- */
-function MCMark({ className = "", title = "Matheus Correia" }: { className?: string; title?: string }) {
+function MCMark({
+  className = "",
+  title = "Matheus Correia",
+  decorative = false,
+}: {
+  className?: string;
+  title?: string;
+  decorative?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+  /* If the symbol fails to load, render nothing — no broken image and no
+   * text/CSS/font recreation of the mark. The wordmark beside it in the
+   * nav and footer keeps the brand legible. */
+  if (failed) return null;
   return (
     <img
-      src={mcSymbolWhite.url}
-      alt={title}
-      aria-label={title}
+      src={MC_SYMBOL_WHITE}
+      alt={decorative ? "" : title}
+      aria-hidden={decorative || undefined}
       className={className}
       draggable={false}
+      onError={() => setFailed(true)}
     />
   );
 }
@@ -87,7 +108,7 @@ function Cta({
       href={WHATSAPP}
       target="_blank"
       rel="noreferrer"
-      className={`${base} ${variantClass[variant]} ${className}`}
+      className={`${base} ${focusRing} ${variantClass[variant]} ${className}`}
     >
       <span>{children}</span>
       <span aria-hidden>→</span>
@@ -100,22 +121,22 @@ function Nav() {
   return (
     <header className="absolute top-0 left-0 right-0 z-30">
       <div className="container-x flex items-center justify-between pt-6 md:pt-8">
-        <a href="#top" className="flex items-center gap-3 text-[var(--ice)]">
+        <a href="#top" className={`flex items-center gap-3 text-[var(--ice)] ${focusRing}`}>
           <MCMark className="h-7 w-auto" />
           <span className="hidden sm:inline font-display text-[11px] uppercase tracking-[0.28em] text-[var(--ice)]/70">
             Matheus Correia / Nutrição
           </span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-          <a href="#metodo" className="hover:text-[var(--ice)] transition-colors">Método</a>
-          <a href="#servicos" className="hover:text-[var(--ice)] transition-colors">Serviços</a>
-          <a href="#faq" className="hover:text-[var(--ice)] transition-colors">FAQ</a>
+          <a href="#metodo" className={`hover:text-[var(--ice)] transition-colors ${focusRing}`}>Método</a>
+          <a href="#servicos" className={`hover:text-[var(--ice)] transition-colors ${focusRing}`}>Serviços</a>
+          <a href="#faq" className={`hover:text-[var(--ice)] transition-colors ${focusRing}`}>FAQ</a>
         </nav>
         <a
           href={WHATSAPP}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 text-[10px] md:text-[11px] uppercase tracking-[0.24em] font-display font-semibold border border-[var(--ice)]/30 rounded-full px-4 py-2 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors"
+          className={`inline-flex items-center gap-2 min-h-[44px] text-[10px] md:text-[11px] uppercase tracking-[0.24em] font-display font-semibold border border-[var(--ice)]/30 rounded-full px-4 py-2.5 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors ${focusRing}`}
         >
           Agendar <span aria-hidden>→</span>
         </a>
@@ -128,6 +149,7 @@ function Nav() {
 function Hero() {
   const heroRef = useRef<HTMLElement>(null);
   const prefersReduced = useReducedMotion();
+  const [heroFailed, setHeroFailed] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
@@ -158,7 +180,7 @@ function Hero() {
 
       {/* Watermark MC */}
       <MCMark
-        aria-hidden
+        decorative
         className="pointer-events-none select-none absolute -right-24 -bottom-16 h-[320px] md:h-[420px] w-auto opacity-[0.05]"
       />
 
@@ -205,7 +227,7 @@ function Hero() {
             transition={{ duration: 0.5, delay: 0.45 }}
             className="mt-8 max-w-xl text-base md:text-lg text-[var(--mute)] leading-relaxed"
           >
-            Acompanhamento individualizado para transformar sua alimentação, sua rotina e seu resultado no corpo — sem terrorismo nutricional, sem plano genérico e sem exigir uma vida perfeita.
+            Acompanhamento individualizado para organizar sua alimentação, sua rotina e construir um caminho mais consistente para seu resultado no corpo — sem terrorismo nutricional, sem plano genérico e sem exigir uma vida perfeita.
           </motion.p>
 
           <motion.div
@@ -234,22 +256,31 @@ function Hero() {
             transition={{ duration: 0.9, delay: 0.25, ease }}
             className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
           >
-            <motion.img
-              src={matheusHero.url}
-              alt="Matheus Correia, nutricionista"
-              className="absolute inset-0 h-full w-full object-cover object-[center_22%] grayscale-[15%] contrast-[1.05]"
-              style={enableParallax ? { y: parallaxY, scale: 1.2 } : { scale: 1.08, transformOrigin: "center" }}
-              draggable={false}
-            />
+            {heroFailed ? (
+              <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
+                <span className="font-display font-semibold text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] border border-dashed border-[var(--ice)]/25 rounded-md px-4 py-3">
+                  [ Inserir foto real do Matheus — hero ]
+                </span>
+              </div>
+            ) : (
+              <motion.img
+                src={HERO_IMAGE}
+                alt="Matheus Correia, nutricionista"
+                className="absolute inset-0 h-full w-full object-cover object-[center_22%] grayscale-[15%] contrast-[1.05]"
+                style={enableParallax ? { y: parallaxY, scale: 1.2 } : { scale: 1.08, transformOrigin: "center" }}
+                draggable={false}
+                onError={() => setHeroFailed(true)}
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
             <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/80 font-display font-semibold">
               <span>Matheus Correia</span>
-              <span>CRN · Nutrição</span>
+              <span>Nutrição</span>
             </div>
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-              <MCMark className="h-8 w-auto opacity-90" />
+              <MCMark decorative className="h-8 w-auto opacity-90" />
               <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold max-w-[10rem] text-right">
-                Routine<br />Performance
+                Matheus Correia<br />Nutrição
               </p>
             </div>
           </motion.div>
@@ -303,7 +334,7 @@ function Pain() {
   return (
     <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-20 md:py-28 overflow-hidden">
       <MCMark
-        aria-hidden
+        decorative
         className="pointer-events-none select-none absolute -left-32 top-1/2 -translate-y-1/2 h-[360px] md:h-[460px] w-auto opacity-[0.04]"
       />
       <div className="container-x relative">
@@ -496,7 +527,7 @@ function Method() {
   return (
     <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative">
       <MCMark
-        aria-hidden
+        decorative
         className="pointer-events-none select-none absolute -left-32 -top-16 h-[280px] md:h-[360px] w-auto opacity-[0.05]"
       />
       <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
@@ -710,7 +741,7 @@ function ImmersivePhoto({
 
           {/* Bottom watermark */}
           <div className="absolute bottom-5 left-5 right-5 z-20 flex items-end justify-between">
-            <MCMark className="h-7 w-auto opacity-80" />
+            <MCMark decorative className="h-7 w-auto opacity-80" />
             <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
               MC / Nutrição
             </span>
@@ -759,7 +790,7 @@ function TrainingNutrition() {
               <span className="block">A nutrição constrói o resultado.</span>
             </h2>
             <p className="mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
-              Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço aparecer no corpo.
+              Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço se refletir na sua evolução.
             </p>
             <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
               Arnold Sports · South America
@@ -861,7 +892,7 @@ const SERVICES = [
   { t: "Hipertrofia", d: "Estratégia para ganho de massa com qualidade." },
   { t: "Recomposição corporal", d: "Perder gordura e ganhar massa em paralelo." },
   { t: "Nutrição para treino", d: "Energia, proteína e recuperação organizadas." },
-  { t: "Acompanhamento online", d: "Atendimento à distância com ajustes regulares." },
+  { t: "Acompanhamento contínuo", d: "Formato definido após avaliação, com ajustes conforme evolução." },
   { t: "Rotina real", d: "Plano que cabe em quem trabalha, treina e vive." },
 ];
 
@@ -872,7 +903,7 @@ function Services() {
       className="relative bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32 overflow-hidden"
     >
       <MCMark
-        aria-hidden
+        decorative
         className="pointer-events-none select-none absolute -right-32 -bottom-24 h-[420px] md:h-[560px] w-auto opacity-[0.04]"
       />
       <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
@@ -891,10 +922,10 @@ function Services() {
             </p>
             <div className="mt-10 flex flex-col gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
               <span className="flex items-center gap-3">
-                <span className="h-px w-6 bg-[var(--ice)]/30" /> Presencial
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Formato definido após avaliação
               </span>
               <span className="flex items-center gap-3">
-                <span className="h-px w-6 bg-[var(--ice)]/30" /> Online
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Estratégia adaptada à rotina
               </span>
               <span className="flex items-center gap-3">
                 <span className="h-px w-6 bg-[var(--ice)]/30" /> Acompanhamento contínuo
@@ -925,7 +956,7 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, delay: index * 0.04, ease }}
-      className="group relative block border-b border-[var(--ice)]/15 isolate overflow-hidden"
+      className={`group relative block border-b border-[var(--ice)]/15 isolate overflow-hidden ${focusRing}`}
     >
       {/* Hover fill — wipes in from left */}
       <span
@@ -971,9 +1002,9 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
 /* -------------------- FAQ -------------------- */
 const FAQS = [
   { q: "Preciso cortar tudo que gosto?", a: "Não. O plano é construído com estratégia, não com proibição. A ideia é organizar quantidade, frequência e contexto, mantendo comida real e o que você gosta dentro do que faz sentido para seu objetivo." },
-  { q: "O plano serve para quem treina?", a: "Sim. O foco do trabalho é justamente unir treino e nutrição, organizando energia, proteína e recuperação para o esforço aparecer no corpo." },
+  { q: "O plano serve para quem treina?", a: "Sim. O foco do trabalho é justamente unir treino e nutrição, organizando energia, proteína e recuperação para o esforço se refletir na sua evolução." },
   { q: "Funciona para quem tem rotina corrida?", a: "É feito para isso. O plano é desenhado a partir da sua rotina real — horários, deslocamentos, refeições fora — e não de um cenário ideal que não existe." },
-  { q: "O atendimento pode ser online?", a: "Sim, com acompanhamento estruturado, ajustes regulares e contato direto entre as consultas." },
+  { q: "Como é definido o formato do acompanhamento?", a: "O formato é definido após avaliação, considerando objetivo, rotina e necessidade de acompanhamento. Os ajustes acontecem conforme a evolução." },
   { q: "Como funciona a primeira consulta?", a: "Conversamos sobre seu histórico, objetivo, rotina, treino e preferências. A partir disso é construído o plano e definido o ritmo de acompanhamento." },
   { q: "O plano é individualizado?", a: "Sim. Nada de cardápio padrão — cada plano é construído para a pessoa, seu objetivo e seu contexto." },
   { q: "Como faço para agendar?", a: "Pelo WhatsApp, clicando em qualquer botão de agendamento desta página." },
@@ -1003,13 +1034,18 @@ function Faq() {
               return (
                 <div key={f.q} className="border-b border-[var(--ice)]/20">
                   <button
+                    type="button"
                     onClick={() => setOpen(isOpen ? null : i)}
-                    className="w-full flex items-center justify-between gap-6 py-6 text-left"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-panel-${i}`}
+                    id={`faq-trigger-${i}`}
+                    className={`w-full flex items-center justify-between gap-6 py-6 text-left ${focusRing}`}
                   >
                     <span className="font-display font-bold text-lg md:text-2xl tracking-[-0.025em] text-[var(--ice)]">
                       {f.q}
                     </span>
                     <span
+                      aria-hidden
                       className={`text-2xl text-[var(--ice)] transition-transform duration-300 ${
                         isOpen ? "rotate-45" : ""
                       }`}
@@ -1018,6 +1054,9 @@ function Faq() {
                     </span>
                   </button>
                   <div
+                    id={`faq-panel-${i}`}
+                    role="region"
+                    aria-labelledby={`faq-trigger-${i}`}
                     className="grid transition-[grid-template-rows] duration-500 ease-out"
                     style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
                   >
@@ -1042,7 +1081,7 @@ function FinalCta() {
   return (
     <section className="relative bg-[var(--night)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
       <MCMark
-        aria-hidden
+        decorative
         className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-20 h-[320px] md:h-[440px] w-auto opacity-[0.05]"
       />
       <div className="container-x text-center max-w-5xl mx-auto relative">
@@ -1085,12 +1124,12 @@ function Footer() {
           <MCMark className="h-6 w-auto" />
           <span>Matheus Correia / Nutrição</span>
         </div>
-        <span>© {new Date().getFullYear()} · Routine Performance</span>
+        <span>© {new Date().getFullYear()} · Matheus Correia Nutrição</span>
         <a
           href={WHATSAPP}
           target="_blank"
           rel="noreferrer"
-          className="hover:text-[var(--ice)] transition-colors"
+          className={`hover:text-[var(--ice)] transition-colors ${focusRing}`}
         >
           WhatsApp →
         </a>

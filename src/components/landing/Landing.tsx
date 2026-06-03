@@ -773,7 +773,6 @@ function TrainingNutrition() {
           objectPos="center 25%"
           topCaption="Arnold · 2024"
           bottomCaption="Treino · Performance"
-          tagNumber="05"
           className="lg:col-span-6 order-1 lg:order-2"
           parallaxOn={parallaxOn}
           photoY={photoY}
@@ -813,7 +812,6 @@ function RealLife() {
           objectPos="center 40%"
           topCaption="Vida real"
           bottomCaption="Estratégia · não proibição"
-          tagNumber="06"
           className="lg:col-span-6"
           parallaxOn={parallaxOn}
           photoY={photoY}

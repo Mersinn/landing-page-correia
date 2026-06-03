@@ -1,5 +1,7 @@
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import mcSymbolWhite from "@/assets/mc-symbol-white.svg.asset.json";
+import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
@@ -10,34 +12,16 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
 };
 
-/* -------------------- MC Monogram -------------------- */
-function MCMark({ className = "", title = "MC" }: { className?: string; title?: string }) {
+/* -------------------- MC Mark (real brand symbol) -------------------- */
+function MCMark({ className = "", title = "Matheus Correia" }: { className?: string; title?: string }) {
   return (
-    <svg
-      viewBox="0 0 120 120"
-      role="img"
+    <img
+      src={mcSymbolWhite.url}
+      alt={title}
       aria-label={title}
       className={className}
-      fill="none"
-    >
-      <rect x="2" y="2" width="116" height="116" rx="6" stroke="currentColor" strokeWidth="2" />
-      {/* M */}
-      <path
-        d="M22 86 V34 L42 70 L62 34 V86"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinejoin="miter"
-        strokeLinecap="square"
-      />
-      {/* C */}
-      <path
-        d="M100 42 C 92 32, 76 32, 72 46 C 68 60, 68 68, 72 78 C 76 90, 92 90, 100 82"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="square"
-        fill="none"
-      />
-    </svg>
+      draggable={false}
+    />
   );
 }
 
@@ -81,7 +65,7 @@ function Nav() {
     <header className="absolute top-0 left-0 right-0 z-30">
       <div className="container-x flex items-center justify-between pt-6 md:pt-8">
         <a href="#top" className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-9 w-9 text-[var(--ice)]" />
+          <MCMark className="h-7 w-auto" />
           <span className="hidden sm:inline font-display text-[11px] uppercase tracking-[0.28em] text-[var(--ice)]/70">
             Matheus Correia / Nutrição
           </span>
@@ -121,7 +105,7 @@ function Hero() {
       {/* Watermark MC */}
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute -right-16 -bottom-24 h-[560px] w-[560px] text-[var(--ice)]/[0.035]"
+        className="pointer-events-none select-none absolute -right-24 -bottom-16 h-[320px] md:h-[420px] w-auto opacity-[0.05]"
       />
 
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end relative">
@@ -173,7 +157,7 @@ function Hero() {
           </motion.div>
         </div>
 
-        {/* Right column: typographic portrait slot */}
+        {/* Right column: real portrait */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -186,21 +170,20 @@ function Hero() {
             transition={{ duration: 1.3, delay: 0.5, ease }}
             className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
           >
-            {/* Layered MC composition stands in for the real photo until it's provided */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--deep)] via-[var(--petrol)] to-[var(--nearblack)]" />
-            <MCMark
-              aria-hidden
-              className="absolute inset-0 m-auto h-[78%] w-[78%] text-[var(--ice)]/15"
+            <img
+              src={matheusHero.url}
+              alt="Matheus Correia, nutricionista"
+              className="absolute inset-0 h-full w-full object-cover object-center grayscale-[15%] contrast-[1.05]"
+              draggable={false}
             />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
-              <span>Mat. Correia</span>
-              <span>Portrait · 01</span>
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/80 font-display font-semibold">
+              <span>Matheus Correia</span>
+              <span>CRN · Nutrição</span>
             </div>
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-              <p className="font-display font-extrabold text-[var(--ice)] leading-none tracking-[-0.04em] text-4xl md:text-5xl">
-                MC<span className="text-[var(--mute)]">/</span>26
-              </p>
-              <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold max-w-[10rem] text-right">
+              <MCMark className="h-8 w-auto opacity-90" />
+              <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold max-w-[10rem] text-right">
                 Routine<br />Performance
               </p>
             </div>
@@ -254,7 +237,7 @@ function Pain() {
     <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute -left-24 top-1/2 -translate-y-1/2 h-[640px] w-[640px] text-[var(--ice)]/[0.025]"
+        className="pointer-events-none select-none absolute -left-32 top-1/2 -translate-y-1/2 h-[360px] md:h-[460px] w-auto opacity-[0.04]"
       />
       <div className="container-x relative">
         <div className="flex items-center gap-3 mb-12">
@@ -410,7 +393,7 @@ function Method() {
     <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative overflow-hidden">
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute -left-32 -top-32 h-[480px] w-[480px] text-[var(--ice)]/[0.03]"
+        className="pointer-events-none select-none absolute -left-32 -top-16 h-[280px] md:h-[360px] w-auto opacity-[0.05]"
       />
       <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
         <div className="flex items-center gap-3 mb-6">
@@ -535,7 +518,7 @@ function TrainingNutrition() {
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--nearblack)] via-[var(--deep)] to-[var(--nearblack)]" />
           <MCMark
             aria-hidden
-            className="absolute -right-12 -bottom-12 h-72 w-72 text-[var(--ice)]/[0.06]"
+            className="absolute -right-12 -bottom-8 h-32 md:h-40 w-auto opacity-[0.08]"
           />
           <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold">
             <span>Frame 02</span>
@@ -743,7 +726,7 @@ function FinalCta() {
     <section className="relative bg-[var(--night)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-32 h-[680px] w-[680px] text-[var(--ice)]/[0.03]"
+        className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-20 h-[320px] md:h-[440px] w-auto opacity-[0.05]"
       />
       <div className="container-x text-center max-w-5xl mx-auto relative">
         <div className="flex items-center justify-center gap-3 mb-10">
@@ -782,7 +765,7 @@ function Footer() {
     <footer className="bg-[var(--nearblack)] text-[var(--mute)] border-t border-[var(--ice)]/10">
       <div className="container-x py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] uppercase tracking-[0.22em] font-display font-semibold">
         <div className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-7 w-7 text-[var(--ice)]" />
+          <MCMark className="h-6 w-auto" />
           <span>Matheus Correia / Nutrição</span>
         </div>
         <span>© {new Date().getFullYear()} · Routine Performance</span>

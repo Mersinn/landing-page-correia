@@ -180,7 +180,7 @@ function Hero() {
                 <motion.span
                   initial={{ y: "110%" }}
                   animate={{ y: 0 }}
-                  transition={{ duration: 0.95, delay: 0.15 + i * 0.12, ease }}
+                  transition={{ duration: 0.7, delay: 0.05 + i * 0.08, ease }}
                   className="block"
                 >
                   {line}
@@ -191,7 +191,7 @@ function Hero() {
               <motion.span
                 initial={{ y: "110%" }}
                 animate={{ y: 0 }}
-                transition={{ duration: 0.95, delay: 0.15 + headline.length * 0.12, ease }}
+                transition={{ duration: 0.7, delay: 0.05 + headline.length * 0.08, ease }}
                 className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] tracking-[-0.02em] mt-2 md:mt-4"
               >
                 toda segunda-feira.
@@ -202,8 +202,8 @@ function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="mt-10 max-w-xl text-base md:text-lg text-[var(--mute)] leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="mt-8 max-w-xl text-base md:text-lg text-[var(--mute)] leading-relaxed"
           >
             Acompanhamento individualizado para transformar sua alimentação, sua rotina e seu resultado no corpo — sem terrorismo nutricional, sem plano genérico e sem exigir uma vida perfeita.
           </motion.p>
@@ -211,8 +211,8 @@ function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.1 }}
-            className="mt-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
           >
             <Cta>Agendar avaliação pelo WhatsApp</Cta>
             <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
@@ -225,13 +225,13 @@ function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
           className="lg:col-span-5 relative"
         >
           <motion.div
             initial={{ clipPath: "inset(100% 0 0 0)" }}
             animate={{ clipPath: "inset(0% 0 0 0)" }}
-            transition={{ duration: 1.3, delay: 0.5, ease }}
+            transition={{ duration: 0.9, delay: 0.25, ease }}
             className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
           >
             <motion.img

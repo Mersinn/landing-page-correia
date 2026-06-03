@@ -86,13 +86,15 @@ function Nav() {
     <header className="absolute top-0 left-0 right-0 z-30">
       <div className="container-x flex items-center justify-between pt-6 md:pt-8">
         <a href="#top" className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-9 w-9 text-[var(--ice)]" />
+          <MCMark className="h-7 w-auto text-[var(--ice)]" />
           <span className="hidden sm:inline font-display text-[11px] uppercase tracking-[0.28em] text-[var(--ice)]/70">
             Matheus Correia / Nutrição
           </span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
           <a href="#metodo" className="hover:text-[var(--ice)] transition-colors">Método</a>
+          <a href="#beneficios" className="hover:text-[var(--ice)] transition-colors">Benefícios</a>
+          <a href="#oferta" className="hover:text-[var(--ice)] transition-colors">Oferta</a>
           <a href="#servicos" className="hover:text-[var(--ice)] transition-colors">Serviços</a>
           <a href="#faq" className="hover:text-[var(--ice)] transition-colors">FAQ</a>
         </nav>
@@ -124,7 +126,7 @@ function Hero() {
       <Nav />
 
       {/* Watermark MC */}
-      <MCMark
+      <MCBadge
         aria-hidden
         className="pointer-events-none select-none absolute -right-16 -bottom-24 h-[560px] w-[560px] text-[var(--ice)]/[0.035]"
       />
@@ -193,20 +195,18 @@ function Hero() {
           >
             {/* Layered MC composition stands in for the real photo until it's provided */}
             <div className="absolute inset-0 bg-gradient-to-br from-[var(--deep)] via-[var(--petrol)] to-[var(--nearblack)]" />
-            <MCMark
+            <MCBadge
               aria-hidden
               className="absolute inset-0 m-auto h-[78%] w-[78%] text-[var(--ice)]/15"
             />
             <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
-              <span>Mat. Correia</span>
-              <span>Portrait · 01</span>
+              <span>Matheus Correia</span>
+              <span>Foto a inserir · 01</span>
             </div>
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-              <p className="font-display font-extrabold text-[var(--ice)] leading-none tracking-[-0.04em] text-4xl md:text-5xl">
-                MC<span className="text-[var(--mute)]">/</span>26
-              </p>
+              <MCMark className="h-10 md:h-12 w-auto text-[var(--ice)]" />
               <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold max-w-[10rem] text-right">
-                Routine<br />Performance
+                Nutrição<br />de resultado
               </p>
             </div>
           </motion.div>
@@ -257,7 +257,7 @@ function Pain() {
   ];
   return (
     <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
-      <MCMark
+      <MCBadge
         aria-hidden
         className="pointer-events-none select-none absolute -left-24 top-1/2 -translate-y-1/2 h-[640px] w-[640px] text-[var(--ice)]/[0.025]"
       />
@@ -413,7 +413,7 @@ function Method() {
 
   return (
     <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative overflow-hidden">
-      <MCMark
+      <MCBadge
         aria-hidden
         className="pointer-events-none select-none absolute -left-32 -top-32 h-[480px] w-[480px] text-[var(--ice)]/[0.03]"
       />
@@ -538,7 +538,7 @@ function TrainingNutrition() {
           className="lg:col-span-6 order-2 lg:order-1 relative aspect-[5/4] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden p-8 flex flex-col justify-between"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--nearblack)] via-[var(--deep)] to-[var(--nearblack)]" />
-          <MCMark
+          <MCBadge
             aria-hidden
             className="absolute -right-12 -bottom-12 h-72 w-72 text-[var(--ice)]/[0.06]"
           />
@@ -746,7 +746,7 @@ function Faq() {
 function FinalCta() {
   return (
     <section className="relative bg-[var(--night)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
-      <MCMark
+      <MCBadge
         aria-hidden
         className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-32 h-[680px] w-[680px] text-[var(--ice)]/[0.03]"
       />
@@ -787,8 +787,8 @@ function Footer() {
     <footer className="bg-[var(--nearblack)] text-[var(--mute)] border-t border-[var(--ice)]/10">
       <div className="container-x py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] uppercase tracking-[0.22em] font-display font-semibold">
         <div className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-7 w-7 text-[var(--ice)]" />
-          <span>Matheus Correia / Nutrição</span>
+          <MCMark className="h-6 w-auto text-[var(--ice)]" />
+          <span>Nutrição / Treino / Rotina real</span>
         </div>
         <span>© {new Date().getFullYear()} · Routine Performance</span>
         <a

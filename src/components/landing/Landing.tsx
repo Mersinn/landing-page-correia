@@ -615,7 +615,6 @@ function ImmersivePhoto({
   objectPos,
   topCaption,
   bottomCaption,
-  tagNumber,
   className = "",
   parallaxOn,
   photoY,
@@ -630,7 +629,6 @@ function ImmersivePhoto({
   objectPos: string;
   topCaption: string;
   bottomCaption: string;
-  tagNumber: string;
   className?: string;
   parallaxOn: boolean;
   photoY: MotionVal;
@@ -660,10 +658,6 @@ function ImmersivePhoto({
       >
         {/* Thin frame ring */}
         <div className="absolute -inset-px border border-[var(--ice)]/15 pointer-events-none z-20" />
-        {/* Corner tag */}
-        <div className="absolute -top-3 -left-3 z-30 hidden md:flex h-10 w-10 items-center justify-center bg-[var(--ice)] text-[var(--night)] font-display font-extrabold text-[11px] tracking-[0.18em]">
-          {tagNumber}
-        </div>
 
         <div className="relative h-full w-full overflow-hidden bg-[var(--deep)]">
           {/* Curtain reveal on enter */}

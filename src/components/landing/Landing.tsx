@@ -575,37 +575,246 @@ function TrainingNutrition() {
 
 /* -------------------- Real Life -------------------- */
 function RealLife() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const imageY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
   return (
-    <section className="bg-[var(--icebg)] text-[var(--night)] py-24 md:py-32">
-      <div className="container-x">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="h-px w-10 bg-[var(--night)]/30" />
-          <p className="eyebrow text-[var(--night)]/60">06 — Vida real</p>
+    <section ref={ref} className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden">
+      <div className="container-x py-24 md:py-32 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        {/* Editorial photo with subtle parallax */}
+        <div className="lg:col-span-6 relative">
+          <div className="relative aspect-[3/4] overflow-hidden border border-[var(--ice)]/10 bg-[var(--night)]">
+            <motion.img
+              src={matheusLamp.url}
+              alt="Matheus Correia sentado sob luz dirigida, bancada escura com hambúrguer — comida real dentro de estratégia"
+              loading="lazy"
+              style={{ y: imageY }}
+              className="absolute inset-0 h-[112%] w-full object-cover object-center will-change-transform"
+            />
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--nearblack)] to-transparent pointer-events-none" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold">
+              <span>Vida real · Estratégia</span>
+              <span>06</span>
+            </div>
+          </div>
         </div>
-        <motion.h2
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[0.98] tracking-[-0.045em] text-[var(--night)] max-w-5xl"
-        >
-          Hambúrguer, chocolate e vida social não precisam ser{" "}
-          <span className="text-[var(--night)]/50">o fim do seu resultado.</span>
-        </motion.h2>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-12 gap-10 items-start">
-          <div className="md:col-span-7 space-y-6 text-[var(--night)] text-lg leading-relaxed max-w-2xl">
+        <div className="lg:col-span-6">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">06 — Vida real</p>
+          </div>
+          <motion.h2
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[0.98] tracking-[-0.045em]"
+          >
+            Hambúrguer, chocolate e vida social não precisam ser{" "}
+            <span className="text-[var(--mute)]">o fim do seu resultado.</span>
+          </motion.h2>
+
+          <div className="mt-10 space-y-6 text-lg leading-relaxed max-w-xl">
             <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
-            <p className="text-[var(--night)]/60">
+            <p className="text-[var(--mute)]">
               Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes para que sua alimentação tenha liberdade sem virar bagunça.
             </p>
           </div>
-          <div className="md:col-span-5 md:pl-10 md:border-l border-[var(--night)]/20">
-            <h3 className="font-display font-extrabold text-3xl md:text-4xl tracking-[-0.04em]">
-              O plano certo não te prende.
-              <span className="block text-[var(--night)]/60">Ele te dá direção.</span>
-            </h3>
+
+          <h3 className="mt-12 font-display font-extrabold text-3xl md:text-4xl tracking-[-0.04em] border-t border-[var(--ice)]/15 pt-8">
+            O plano certo não te prende.
+            <span className="block text-[var(--mute)]">Ele te dá direção.</span>
+          </h3>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- Benefits -------------------- */
+const BENEFITS = [
+  "Você come o que gosta sem sentir que perdeu a semana.",
+  "Você para de recomeçar toda segunda.",
+  "O esforço que você já faz na academia passa a trabalhar junto com a alimentação.",
+  "Quando a rotina sai do controle, você sabe o que ajustar.",
+  "Você troca culpa por direção.",
+  "O plano é corrigido antes de você abandonar.",
+];
+
+function Benefits() {
+  return (
+    <section id="beneficios" className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+      <div className="container-x">
+        <div className="flex items-center gap-3 mb-8">
+          <span className="h-px w-10 bg-[var(--ice)]/40" />
+          <p className="eyebrow text-[var(--mute)]">07 — Benefícios</p>
+        </div>
+        <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
+          O que muda quando o plano é{" "}
+          <span className="text-[var(--mute)]">feito para a sua vida.</span>
+        </h2>
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {BENEFITS.map((b, i) => (
+            <motion.div
+              key={b}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.55, delay: i * 0.06, ease }}
+              className="relative border border-[var(--ice)]/12 bg-[var(--nearblack)] p-6 rounded-lg min-h-[160px] flex flex-col justify-between"
+            >
+              <span className="text-[10px] tabular-nums font-display font-semibold tracking-[0.24em] text-[var(--mute)]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="mt-6 font-display font-semibold text-lg md:text-xl leading-snug tracking-[-0.02em] text-[var(--ice)]">
+                {b}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- Objections -------------------- */
+const OBJECTIONS = [
+  {
+    q: "Já tentei dieta antes e sempre desisto.",
+    a: "Você não desistiu por falta de força de vontade. Desistiu porque seguia um plano que não foi feito para sua rotina e ninguém ajustou antes de você travar.",
+  },
+  {
+    q: "Minha rotina é uma bagunça.",
+    a: "Rotina bagunçada não é impedimento. É o ponto de partida.",
+  },
+  {
+    q: "Vou ter que cortar tudo que gosto?",
+    a: "Não. Suas preferências e vida social entram no plano com estratégia.",
+  },
+  {
+    q: "Funciona para o meu treino e meu nível?",
+    a: "O plano parte do seu objetivo, do seu treino e do seu contexto. Emagrecer, ganhar massa ou recompor exigem caminhos diferentes.",
+  },
+  {
+    q: "É caro?",
+    a: "O investimento depende do formato de acompanhamento. O melhor caminho é entender seu objetivo e sua rotina primeiro — isso é conversado direto pelo WhatsApp.",
+  },
+  {
+    q: "Você atende online?",
+    a: "Sim. O acompanhamento online é estruturado, com ajustes regulares e contato direto entre as consultas.",
+  },
+];
+
+function Objections() {
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <section className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-5">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">08 — Objeções</p>
           </div>
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
+            Antes de pensar{" "}
+            <span className="text-[var(--mute)]">“isso não funciona para mim”.</span>
+          </h2>
+          <p className="mt-6 text-[var(--mute)] text-base leading-relaxed max-w-md">
+            As travas mais comuns não são sobre comida. São sobre rotina, contexto e ajuste — e é exatamente aí que o acompanhamento entra.
+          </p>
+        </div>
+        <div className="lg:col-span-7">
+          <div className="border-t border-[var(--ice)]/20">
+            {OBJECTIONS.map((o, i) => {
+              const isOpen = open === i;
+              return (
+                <div key={o.q} className="border-b border-[var(--ice)]/20">
+                  <button
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    className="w-full flex items-center justify-between gap-6 py-6 text-left group"
+                  >
+                    <span className="font-display font-bold text-lg md:text-2xl tracking-[-0.025em] text-[var(--ice)] group-hover:text-[var(--ice)]">
+                      {o.q}
+                    </span>
+                    <span
+                      className={`text-2xl text-[var(--ice)] transition-transform duration-300 ${
+                        isOpen ? "rotate-45" : ""
+                      }`}
+                    >
+                      +
+                    </span>
+                  </button>
+                  <div
+                    className="grid transition-[grid-template-rows] duration-500 ease-out"
+                    style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+                  >
+                    <div className="overflow-hidden">
+                      <p className="pb-6 pr-10 text-[var(--mute)] leading-relaxed max-w-2xl">
+                        {o.a}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- Offer -------------------- */
+const OFFER_ROWS: Array<{ label: string; value: string }> = [
+  { label: "O que é", value: "Acompanhamento nutricional individualizado e contínuo." },
+  { label: "Primeiro passo", value: "Avaliação inicial — rotina, histórico, treino, preferências e objetivo." },
+  { label: "Incluído", value: "Plano alimentar individualizado e ajustes conforme a evolução." },
+  { label: "Formato", value: "Atendimento online com acompanhamento estruturado." },
+  { label: "Investimento", value: "Conversado pelo WhatsApp, conforme o formato definido." },
+  { label: "Como começar", value: "Agendar avaliação pelo WhatsApp." },
+];
+
+function Offer() {
+  return (
+    <section id="oferta" className="bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div className="lg:col-span-5">
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">09 — Como funciona</p>
+          </div>
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
+            Como funciona o{" "}
+            <span className="text-[var(--mute)]">acompanhamento.</span>
+          </h2>
+          <p className="mt-6 text-[var(--mute)] text-base leading-relaxed max-w-md">
+            Sem letras miúdas. O caminho começa entendendo seu objetivo e sua rotina — o resto é desenhado a partir disso.
+          </p>
+          <div className="mt-10">
+            <Cta>Agendar avaliação pelo WhatsApp</Cta>
+          </div>
+        </div>
+        <div className="lg:col-span-7">
+          <dl className="border-t border-[var(--ice)]/15">
+            {OFFER_ROWS.map((row, i) => (
+              <motion.div
+                key={row.label}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: i * 0.05, ease }}
+                className="grid grid-cols-12 gap-4 md:gap-8 py-5 md:py-6 border-b border-[var(--ice)]/15"
+              >
+                <dt className="col-span-12 md:col-span-4 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold pt-1">
+                  {row.label}
+                </dt>
+                <dd className="col-span-12 md:col-span-8 font-display font-semibold text-lg md:text-xl tracking-[-0.02em] text-[var(--ice)] leading-snug">
+                  {row.value}
+                </dd>
+              </motion.div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>

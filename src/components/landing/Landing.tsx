@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import matheusLamp from "@/assets/matheus-lamp.png.asset.json";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
@@ -10,33 +11,37 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
 };
 
-/* -------------------- MC Monogram -------------------- */
+/* -------------------- Brand Mark (official Matheus Correia) -------------------- */
 function MCMark({ className = "", title = "MC" }: { className?: string; title?: string }) {
   return (
     <svg
-      viewBox="0 0 120 120"
+      viewBox="0 0 700.22 251.21"
       role="img"
       aria-label={title}
       className={className}
-      fill="none"
+      fill="currentColor"
     >
-      <rect x="2" y="2" width="116" height="116" rx="6" stroke="currentColor" strokeWidth="2" />
-      {/* M */}
-      <path
-        d="M22 86 V34 L42 70 L62 34 V86"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinejoin="miter"
-        strokeLinecap="square"
-      />
-      {/* C */}
-      <path
-        d="M100 42 C 92 32, 76 32, 72 46 C 68 60, 68 68, 72 78 C 76 90, 92 90, 100 82"
-        stroke="currentColor"
-        strokeWidth="6"
-        strokeLinecap="square"
-        fill="none"
-      />
+      <polygon points="258.64 27.86 208.94 116.23 192.92 87.93 139.17 182.85 100.5 251.21 0 251.21 142.24 0 242.85 0 258.64 27.86" />
+      <polygon points="700.22 0 659.46 72.01 494.2 72.01 466.97 120.1 466.97 120.14 431.45 182.85 490.22 182.85 451.79 251.21 314.66 251.21 349.88 189.04 349.88 189 353.36 182.85 353.39 182.85 378.44 138.57 416.14 72.01 427.94 51.14 456.87 0 700.22 0" />
+      <polygon points="414.8 27.93 365.46 115.62 349.95 88.23 321.38 138.67 321.38 138.7 296.4 182.85 271.55 226.8 257.7 251.21 156.79 251.21 195.49 182.85 221.04 137.7 258.27 72.01 270.95 49.57 299.01 0 398.98 0 399.45 .84 414.8 27.93" />
+      <polygon points="596.68 182.85 562.69 242.88 557.98 251.21 477.24 251.21 515.67 182.85 596.68 182.85" />
+    </svg>
+  );
+}
+
+/* MC Symbol used as square watermark (auto squarish viewbox crop) */
+function MCBadge({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="100 0 500 251.21"
+      aria-hidden
+      className={className}
+      fill="currentColor"
+    >
+      <polygon points="258.64 27.86 208.94 116.23 192.92 87.93 139.17 182.85 100.5 251.21 0 251.21 142.24 0 242.85 0 258.64 27.86" />
+      <polygon points="414.8 27.93 365.46 115.62 349.95 88.23 321.38 138.67 321.38 138.7 296.4 182.85 271.55 226.8 257.7 251.21 156.79 251.21 195.49 182.85 221.04 137.7 258.27 72.01 270.95 49.57 299.01 0 398.98 0 399.45 .84 414.8 27.93" />
+      <polygon points="596.68 182.85 562.69 242.88 557.98 251.21 477.24 251.21 515.67 182.85 596.68 182.85" />
+      <polygon points="700.22 0 659.46 72.01 494.2 72.01 466.97 120.1 466.97 120.14 431.45 182.85 490.22 182.85 451.79 251.21 314.66 251.21 349.88 189.04 349.88 189 353.36 182.85 353.39 182.85 378.44 138.57 416.14 72.01 427.94 51.14 456.87 0 700.22 0" />
     </svg>
   );
 }

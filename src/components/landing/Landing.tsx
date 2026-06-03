@@ -399,7 +399,7 @@ function Pain() {
 /* -------------------- Positioning -------------------- */
 function Positioning() {
   return (
-    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-20 md:py-24">
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">

@@ -391,7 +391,7 @@ function Positioning() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">03 — Individualidade</p>
+            <p className="eyebrow text-[var(--mute)]">Individualidade</p>
           </div>
           <motion.h2
             variants={fadeUp}
@@ -490,14 +490,14 @@ function Method() {
       <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
         <div className="flex items-center gap-3 mb-6">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">04 — Método</p>
+          <p className="eyebrow text-[var(--mute)]">Método</p>
         </div>
-        <p className="font-display font-semibold text-xs md:text-sm uppercase tracking-[0.24em] text-[var(--mute)]">
-          Flexível não significa sem método. / Rígido não significa eficiente.
-        </p>
-        <h2 className="mt-6 font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
+        <h2 className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
           Um plano feito para sair do papel.
         </h2>
+        <p className="mt-6 max-w-2xl font-narrow italic text-[var(--mute)] text-lg md:text-xl leading-snug">
+          Flexível não significa sem método. Rígido não significa eficiente.
+        </p>
       </div>
 
       {/* Desktop sticky scroll */}

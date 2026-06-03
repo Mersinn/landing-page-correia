@@ -73,73 +73,25 @@ function Cta({
   children: React.ReactNode;
   className?: string;
 }) {
-  const prefersReduced = useReducedMotion();
   const base =
-    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] md:text-[12px] font-display font-semibold tracking-[0.22em] uppercase rounded-full overflow-hidden whitespace-nowrap leading-none isolate";
-
-  /* Reduced-motion or non-ice variants: simple Tailwind hover (CSS handles instant transition) */
-  if (variant !== "ice" || prefersReduced) {
-    const variantClass: Record<string, string> = {
-      ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--deep)] hover:text-[var(--ice)] transition-colors duration-300",
-      outline:
-        "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors duration-300",
-      ghostDark:
-        "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)] transition-colors duration-300",
-    };
-    return (
-      <a
-        href={WHATSAPP}
-        target="_blank"
-        rel="noreferrer"
-        className={`${base} ${variantClass[variant]} ${className}`}
-      >
-        <span className="relative z-10">{children}</span>
-        <span aria-hidden className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-x-1">
-          →
-        </span>
-      </a>
-    );
-  }
-
-  /* Animated ice variant: circular fill expands from left on hover */
+    "group inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] md:text-[12px] font-display font-semibold tracking-[0.22em] uppercase rounded-full whitespace-nowrap leading-none transition-colors duration-300";
+  const variantClass: Record<string, string> = {
+    ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--mute)] hover:text-[var(--ice)]",
+    outline:
+      "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)]",
+    ghostDark:
+      "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)]",
+  };
   return (
-    <motion.a
+    <a
       href={WHATSAPP}
       target="_blank"
       rel="noreferrer"
-      className={`${base} bg-[var(--ice)] text-[var(--night)] shadow-[0_10px_30px_-12px_rgba(244,247,248,0.35)] ${className}`}
-      whileHover="hover"
-      whileTap={{ scale: 0.98 }}
-      initial="rest"
+      className={`${base} ${variantClass[variant]} ${className}`}
     >
-      {/* Fill layer — scales from left */}
-      <motion.span
-        aria-hidden
-        className="absolute inset-0 bg-[var(--deep)]"
-        style={{ originX: 0 }}
-        variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      />
-      {/* Text + arrow — sit above fill, swap colour on hover */}
-      <motion.span
-        className="relative z-10 flex items-center gap-3"
-        variants={{
-          rest: { color: "var(--night)" },
-          hover: { color: "var(--ice)" },
-        }}
-        transition={{ duration: 0.4, ease }}
-      >
-        {children}
-        <motion.span
-          aria-hidden
-          variants={{ rest: { x: 0 }, hover: { x: 6 } }}
-          transition={{ duration: 0.4, ease }}
-          className="inline-block"
-        >
-          →
-        </motion.span>
-      </motion.span>
-    </motion.a>
+      <span>{children}</span>
+      <span aria-hidden>→</span>
+    </a>
   );
 }
 

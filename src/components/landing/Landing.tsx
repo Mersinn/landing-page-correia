@@ -73,73 +73,25 @@ function Cta({
   children: React.ReactNode;
   className?: string;
 }) {
-  const prefersReduced = useReducedMotion();
   const base =
-    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] md:text-[12px] font-display font-semibold tracking-[0.22em] uppercase rounded-full overflow-hidden whitespace-nowrap leading-none isolate";
-
-  /* Reduced-motion or non-ice variants: simple Tailwind hover (CSS handles instant transition) */
-  if (variant !== "ice" || prefersReduced) {
-    const variantClass: Record<string, string> = {
-      ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--deep)] hover:text-[var(--ice)] transition-colors duration-300",
-      outline:
-        "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors duration-300",
-      ghostDark:
-        "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)] transition-colors duration-300",
-    };
-    return (
-      <a
-        href={WHATSAPP}
-        target="_blank"
-        rel="noreferrer"
-        className={`${base} ${variantClass[variant]} ${className}`}
-      >
-        <span className="relative z-10">{children}</span>
-        <span aria-hidden className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-x-1">
-          →
-        </span>
-      </a>
-    );
-  }
-
-  /* Animated ice variant: circular fill expands from left on hover */
+    "group inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] md:text-[12px] font-display font-semibold tracking-[0.22em] uppercase rounded-full whitespace-nowrap leading-none transition-colors duration-300";
+  const variantClass: Record<string, string> = {
+    ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--mute)] hover:text-[var(--ice)]",
+    outline:
+      "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)]",
+    ghostDark:
+      "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)]",
+  };
   return (
-    <motion.a
+    <a
       href={WHATSAPP}
       target="_blank"
       rel="noreferrer"
-      className={`${base} bg-[var(--ice)] text-[var(--night)] shadow-[0_10px_30px_-12px_rgba(244,247,248,0.35)] ${className}`}
-      whileHover="hover"
-      whileTap={{ scale: 0.98 }}
-      initial="rest"
+      className={`${base} ${variantClass[variant]} ${className}`}
     >
-      {/* Fill layer — scales from left */}
-      <motion.span
-        aria-hidden
-        className="absolute inset-0 bg-[var(--deep)]"
-        style={{ originX: 0 }}
-        variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      />
-      {/* Text + arrow — sit above fill, swap colour on hover */}
-      <motion.span
-        className="relative z-10 flex items-center gap-3"
-        variants={{
-          rest: { color: "var(--night)" },
-          hover: { color: "var(--ice)" },
-        }}
-        transition={{ duration: 0.4, ease }}
-      >
-        {children}
-        <motion.span
-          aria-hidden
-          variants={{ rest: { x: 0 }, hover: { x: 6 } }}
-          transition={{ duration: 0.4, ease }}
-          className="inline-block"
-        >
-          →
-        </motion.span>
-      </motion.span>
-    </motion.a>
+      <span>{children}</span>
+      <span aria-hidden>→</span>
+    </a>
   );
 }
 
@@ -228,7 +180,7 @@ function Hero() {
                 <motion.span
                   initial={{ y: "110%" }}
                   animate={{ y: 0 }}
-                  transition={{ duration: 0.95, delay: 0.15 + i * 0.12, ease }}
+                  transition={{ duration: 0.7, delay: 0.05 + i * 0.08, ease }}
                   className="block"
                 >
                   {line}
@@ -239,7 +191,7 @@ function Hero() {
               <motion.span
                 initial={{ y: "110%" }}
                 animate={{ y: 0 }}
-                transition={{ duration: 0.95, delay: 0.15 + headline.length * 0.12, ease }}
+                transition={{ duration: 0.7, delay: 0.05 + headline.length * 0.08, ease }}
                 className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] tracking-[-0.02em] mt-2 md:mt-4"
               >
                 toda segunda-feira.
@@ -250,8 +202,8 @@ function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="mt-10 max-w-xl text-base md:text-lg text-[var(--mute)] leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.45 }}
+            className="mt-8 max-w-xl text-base md:text-lg text-[var(--mute)] leading-relaxed"
           >
             Acompanhamento individualizado para transformar sua alimentação, sua rotina e seu resultado no corpo — sem terrorismo nutricional, sem plano genérico e sem exigir uma vida perfeita.
           </motion.p>
@@ -259,8 +211,8 @@ function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.1 }}
-            className="mt-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
           >
             <Cta>Agendar avaliação pelo WhatsApp</Cta>
             <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
@@ -273,13 +225,13 @@ function Hero() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.4 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
           className="lg:col-span-5 relative"
         >
           <motion.div
             initial={{ clipPath: "inset(100% 0 0 0)" }}
             animate={{ clipPath: "inset(0% 0 0 0)" }}
-            transition={{ duration: 1.3, delay: 0.5, ease }}
+            transition={{ duration: 0.9, delay: 0.25, ease }}
             className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
           >
             <motion.img
@@ -414,56 +366,87 @@ function Pain() {
 
 /* -------------------- Positioning -------------------- */
 function Positioning() {
+  const blocks = [
+    {
+      n: "01",
+      label: "Diagnóstico",
+      text: "Sua rotina, seus horários, seu treino, sua fome, suas preferências e o que já falhou antes.",
+    },
+    {
+      n: "02",
+      label: "Estratégia",
+      text: "Um plano construído com comida de verdade, ajustes e protocolo — não uma dieta perfeita no papel.",
+    },
+    {
+      n: "03",
+      label: "Continuidade",
+      text: "Acompanhamento que tira você do ciclo de começa na segunda e desiste na sexta.",
+    },
+  ];
   return (
-    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-20 md:py-24">
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-5">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">Individualidade</p>
+    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+      <div className="container-x">
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-16 md:mb-24">
+          <div className="lg:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.5, ease }}
+              className="flex items-center gap-3 mb-8"
+            >
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Individualidade</p>
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.7, ease }}
+              className="font-display font-extrabold text-[40px] md:text-6xl lg:text-[80px] leading-[0.95] tracking-[-0.045em]"
+            >
+              O acompanhamento não começa com um cardápio.
+              <span className="block text-[var(--mute)]">Começa entendendo você.</span>
+            </motion.h2>
           </div>
-          <motion.h2
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[1.0] tracking-[-0.04em]"
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.7, delay: 0.15, ease }}
+            className="lg:col-span-5 lg:pt-4 self-end"
           >
-            O acompanhamento não começa com um cardápio.
-            <span className="block text-[var(--mute)]">Começa entendendo você.</span>
-          </motion.h2>
+            <p className="text-base md:text-lg text-[var(--mute)] leading-relaxed max-w-md lg:ml-auto">
+              Sua rotina é única. Seu plano alimentar também precisa ser — com estratégia, comida de verdade e ajustes contínuos.
+            </p>
+          </motion.div>
         </div>
-        <div className="lg:col-span-7 lg:pl-12 lg:border-l border-[var(--ice)]/15">
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="text-lg md:text-xl text-[var(--ice)] leading-relaxed"
-          >
-            Sua rotina, seus horários, seu treino, sua fome, suas preferências, suas dificuldades e o que já falhou antes.
-          </motion.p>
 
-          <motion.h3
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="mt-12 font-display font-bold text-2xl md:text-3xl tracking-[-0.03em]"
-          >
-            Sua rotina é única.
-            <span className="block text-[var(--mute)]">Seu plano alimentar também precisa ser.</span>
-          </motion.h3>
-
-          <motion.p
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="mt-8 text-base md:text-lg text-[var(--mute)] leading-relaxed max-w-2xl"
-          >
-            O trabalho do Matheus Correia é construir um plano alimentar com estratégia — não uma dieta perfeita no papel. Um plano que encaixa comida de verdade, preferências, ajustes e protocolo para você continuar evoluindo sem viver no ciclo de começa na segunda e desiste na sexta.
-          </motion.p>
+        {/* Three structured blocks */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[var(--ice)]/10 border border-[var(--ice)]/10">
+          {blocks.map((b, i) => (
+            <motion.div
+              key={b.n}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.6, delay: i * 0.08, ease }}
+              className="bg-[var(--deep)] p-8 md:p-10"
+            >
+              <div className="flex items-baseline justify-between mb-6">
+                <span className="font-display font-extrabold text-5xl md:text-6xl tabular-nums tracking-[-0.04em] text-[var(--ice)]">
+                  {b.n}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+                  {b.label}
+                </span>
+              </div>
+              <p className="text-[var(--ice)]/85 text-base md:text-[17px] leading-relaxed">
+                {b.text}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -632,7 +615,6 @@ function ImmersivePhoto({
   objectPos,
   topCaption,
   bottomCaption,
-  tagNumber,
   className = "",
   parallaxOn,
   photoY,
@@ -647,7 +629,6 @@ function ImmersivePhoto({
   objectPos: string;
   topCaption: string;
   bottomCaption: string;
-  tagNumber: string;
   className?: string;
   parallaxOn: boolean;
   photoY: MotionVal;
@@ -677,10 +658,6 @@ function ImmersivePhoto({
       >
         {/* Thin frame ring */}
         <div className="absolute -inset-px border border-[var(--ice)]/15 pointer-events-none z-20" />
-        {/* Corner tag */}
-        <div className="absolute -top-3 -left-3 z-30 hidden md:flex h-10 w-10 items-center justify-center bg-[var(--ice)] text-[var(--night)] font-display font-extrabold text-[11px] tracking-[0.18em]">
-          {tagNumber}
-        </div>
 
         <div className="relative h-full w-full overflow-hidden bg-[var(--deep)]">
           {/* Curtain reveal on enter */}
@@ -796,7 +773,6 @@ function TrainingNutrition() {
           objectPos="center 25%"
           topCaption="Arnold · 2024"
           bottomCaption="Treino · Performance"
-          tagNumber="05"
           className="lg:col-span-6 order-1 lg:order-2"
           parallaxOn={parallaxOn}
           photoY={photoY}
@@ -836,7 +812,6 @@ function RealLife() {
           objectPos="center 40%"
           topCaption="Vida real"
           bottomCaption="Estratégia · não proibição"
-          tagNumber="06"
           className="lg:col-span-6"
           parallaxOn={parallaxOn}
           photoY={photoY}
@@ -949,30 +924,45 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.05, ease }}
-      className="group relative block border-b border-[var(--ice)]/15 py-7 md:py-8 isolate overflow-hidden"
+      transition={{ duration: 0.5, delay: index * 0.04, ease }}
+      className="group relative block border-b border-[var(--ice)]/15 isolate overflow-hidden"
     >
       {/* Hover fill — wipes in from left */}
       <span
         aria-hidden
-        className="absolute inset-0 -z-10 origin-left scale-x-0 bg-[var(--petrol)]/35 transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+        className="absolute inset-0 origin-left scale-x-0 bg-[var(--petrol)]/35 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
       />
-      <div className="grid grid-cols-12 gap-4 md:gap-8 items-baseline px-2 md:px-4">
-        <span className="col-span-2 md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <h3 className="col-span-10 md:col-span-5 font-display font-extrabold text-2xl md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
-          {title}
-        </h3>
-        <p className="col-span-10 col-start-3 md:col-span-5 md:col-start-auto text-sm md:text-base text-[var(--mute)] leading-relaxed group-hover:text-[var(--ice)]/85 transition-colors duration-300">
-          {desc}
-        </p>
-        <span
-          aria-hidden
-          className="hidden md:flex col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
-        >
-          →
-        </span>
+      <div className="relative px-2 md:px-6 py-7 md:py-10">
+        {/* Mobile: stacked. Desktop: 3 columns */}
+        <div className="md:grid md:grid-cols-12 md:gap-8 md:items-center">
+          {/* Row 1 on mobile: number + arrow */}
+          <div className="flex items-center justify-between md:contents">
+            <span className="md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span
+              aria-hidden
+              className="md:hidden text-[var(--ice)]/60 text-lg leading-none group-hover:text-[var(--ice)] transition-colors"
+            >
+              →
+            </span>
+          </div>
+
+          <h3 className="md:col-span-5 mt-3 md:mt-0 font-display font-extrabold text-[26px] md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+            {title}
+          </h3>
+
+          <p className="md:col-span-5 mt-3 md:mt-0 text-sm md:text-base text-[var(--mute)] leading-relaxed max-w-md group-hover:text-[var(--ice)]/85 transition-colors duration-300">
+            {desc}
+          </p>
+
+          <span
+            aria-hidden
+            className="hidden md:flex md:col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
+          >
+            →
+          </span>
+        </div>
       </div>
     </motion.a>
   );

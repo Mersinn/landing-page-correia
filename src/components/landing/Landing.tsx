@@ -603,48 +603,52 @@ function Method() {
 /* -------------------- Training + Nutrition -------------------- */
 function TrainingNutrition() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { y: photoY, enabled: parallaxOn } = useParallax(sectionRef);
+  const { y: photoY, textY, scale, enabled: parallaxOn } = useParallax(sectionRef);
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden min-h-[100vh] flex items-center"
+      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden min-h-[110vh] flex items-end lg:items-center"
     >
-      {/* Full-bleed parallax photo */}
+      {/* Full-bleed parallax photo — image is 140% tall so the 40% travel never reveals edges */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.img
           src="/matheus-arnold.jpg"
           alt="Matheus Correia no Arnold Sports Festival South America"
-          className="absolute inset-0 h-[125%] w-full object-cover object-[center_25%]"
-          style={parallaxOn ? { y: photoY, scale: 1.05 } : { scale: 1.02 }}
+          className="absolute left-0 right-0 -top-[20%] h-[140%] w-full object-cover object-[center_30%] will-change-transform"
+          style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
           draggable={false}
         />
-        {/* Dark gradient overlay — readable text on left, photo breathes on right */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)] via-[var(--night)]/85 to-[var(--night)]/30" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)] via-transparent to-transparent" />
+        {/* Soft vignette only — photo stays visible across the section */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)]/85 via-[var(--night)]/25 to-transparent lg:from-[var(--night)]/90 lg:via-[var(--night)]/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/80 via-transparent to-[var(--night)]/40" />
       </div>
 
-      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 py-28 md:py-40">
+      <div className="container-x relative w-full grid grid-cols-1 lg:grid-cols-12 gap-8 py-20 md:py-28 lg:py-40">
         <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 1, ease }}
-          className="lg:col-span-7"
+          style={parallaxOn ? { y: textY } : undefined}
+          className="lg:col-span-6 xl:col-span-5"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
-          </div>
-          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl leading-[0.98] tracking-[-0.045em]">
-            A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
-            <span className="block">A nutrição constrói o resultado.</span>
-          </h2>
-          <p className="mt-8 text-[var(--ice)]/80 text-lg leading-relaxed max-w-xl">
-            Se você já está fazendo esforço na academia, sua alimentação precisa trabalhar junto. A nutrição organiza energia, proteína, recuperação e consistência — para esse esforço aparecer no corpo.
-          </p>
-          <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-            Arnold Sports · South America
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, ease }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
+            </div>
+            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[56px] leading-[0.98] tracking-[-0.045em]">
+              A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
+              <span className="block">A nutrição constrói o resultado.</span>
+            </h2>
+            <p className="mt-6 md:mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-md">
+              Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço aparecer no corpo.
+            </p>
+            <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+              Arnold Sports · South America
+            </p>
+          </motion.div>
         </motion.div>
       </div>
     </section>
@@ -654,54 +658,52 @@ function TrainingNutrition() {
 /* -------------------- Real Life -------------------- */
 function RealLife() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { y: photoY, enabled: parallaxOn } = useParallax(sectionRef);
+  const { y: photoY, textY, scale, enabled: parallaxOn } = useParallax(sectionRef);
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden min-h-[100vh] flex items-end"
+      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden min-h-[110vh] flex items-end"
     >
-      {/* Full-bleed parallax photo */}
+      {/* Full-bleed parallax photo dominates the top ~60% of the section */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.img
           src="/matheus-burger.jpg"
           alt="Matheus Correia — alimentação real com estratégia"
-          className="absolute inset-0 h-[125%] w-full object-cover object-[center_40%]"
-          style={parallaxOn ? { y: photoY, scale: 1.05 } : { scale: 1.02 }}
+          className="absolute left-0 right-0 -top-[20%] h-[140%] w-full object-cover object-[center_45%] will-change-transform"
+          style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
           draggable={false}
         />
-        {/* Gradient from bottom up — text sits in a readable pool */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)] via-[var(--night)]/70 to-[var(--night)]/10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)]/60 via-transparent to-transparent" />
+        {/* Only the bottom band darkens — photo breathes in the upper 55% */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--night)_0%,var(--night)_28%,rgba(5,6,7,0.55)_55%,transparent_78%)]" />
       </div>
 
-      <div className="container-x relative py-28 md:py-40 w-full">
-        <div className="flex items-center gap-3 mb-6">
-          <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">Vida real</p>
-        </div>
-        <motion.h2
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)] max-w-5xl"
-        >
-          Hambúrguer, chocolate e vida social não precisam ser{" "}
-          <span className="text-[var(--mute)]">o fim do seu resultado.</span>
-        </motion.h2>
-
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 max-w-5xl">
-          <div className="lg:col-span-7 space-y-5 text-[var(--ice)]/85 text-lg leading-relaxed">
-            <p>O problema não é uma refeição fora do plano. O problema é não ter estratégia para lidar com ela.</p>
-            <p className="text-[var(--mute)]">
-              Um plano bem construído não te obriga a apagar tudo que você gosta. Ele organiza quantidade, frequência, contexto e ajustes — para sua alimentação ter liberdade sem virar bagunça.
-            </p>
+      <div className="container-x relative w-full pb-16 md:pb-24 pt-[55vh] md:pt-[60vh]">
+        <motion.div style={parallaxOn ? { y: textY } : undefined}>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="h-px w-10 bg-[var(--ice)]/40" />
+            <p className="eyebrow text-[var(--mute)]">Vida real</p>
           </div>
-          <h3 className="lg:col-span-5 font-display font-extrabold text-2xl md:text-3xl tracking-[-0.035em] leading-[1.05] self-end">
-            O plano certo não te prende.
-            <span className="block text-[var(--mute)]">Ele te dá direção.</span>
-          </h3>
-        </div>
+          <motion.h2
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[64px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)] max-w-4xl"
+          >
+            Hambúrguer, chocolate e vida social{" "}
+            <span className="text-[var(--mute)]">não precisam ser o fim do seu resultado.</span>
+          </motion.h2>
+
+          <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 max-w-5xl">
+            <div className="lg:col-span-7 space-y-4 text-[var(--ice)]/80 text-base md:text-lg leading-relaxed">
+              <p>O problema não é uma refeição fora do plano. É não ter estratégia para lidar com ela.</p>
+            </div>
+            <h3 className="lg:col-span-5 font-display font-bold text-xl md:text-2xl tracking-[-0.03em] leading-[1.1] self-end">
+              O plano certo não te prende.
+              <span className="block text-[var(--mute)]">Te dá direção.</span>
+            </h3>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

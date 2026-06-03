@@ -65,7 +65,7 @@ function Nav() {
     <header className="absolute top-0 left-0 right-0 z-30">
       <div className="container-x flex items-center justify-between pt-6 md:pt-8">
         <a href="#top" className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-9 w-9 text-[var(--ice)]" />
+          <MCMark className="h-7 w-auto" />
           <span className="hidden sm:inline font-display text-[11px] uppercase tracking-[0.28em] text-[var(--ice)]/70">
             Matheus Correia / Nutrição
           </span>
@@ -105,7 +105,7 @@ function Hero() {
       {/* Watermark MC */}
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute -right-16 -bottom-24 h-[560px] w-[560px] text-[var(--ice)]/[0.035]"
+        className="pointer-events-none select-none absolute -right-24 -bottom-16 h-[320px] md:h-[420px] w-auto opacity-[0.05]"
       />
 
       <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end relative">
@@ -157,7 +157,7 @@ function Hero() {
           </motion.div>
         </div>
 
-        {/* Right column: typographic portrait slot */}
+        {/* Right column: real portrait */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -170,21 +170,20 @@ function Hero() {
             transition={{ duration: 1.3, delay: 0.5, ease }}
             className="relative aspect-[4/5] bg-[var(--deep)] border border-[var(--ice)]/10 overflow-hidden"
           >
-            {/* Layered MC composition stands in for the real photo until it's provided */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--deep)] via-[var(--petrol)] to-[var(--nearblack)]" />
-            <MCMark
-              aria-hidden
-              className="absolute inset-0 m-auto h-[78%] w-[78%] text-[var(--ice)]/15"
+            <img
+              src={matheusHero.url}
+              alt="Matheus Correia, nutricionista"
+              className="absolute inset-0 h-full w-full object-cover object-center grayscale-[15%] contrast-[1.05]"
+              draggable={false}
             />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
-              <span>Mat. Correia</span>
-              <span>Portrait · 01</span>
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/80 font-display font-semibold">
+              <span>Matheus Correia</span>
+              <span>CRN · Nutrição</span>
             </div>
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
-              <p className="font-display font-extrabold text-[var(--ice)] leading-none tracking-[-0.04em] text-4xl md:text-5xl">
-                MC<span className="text-[var(--mute)]">/</span>26
-              </p>
-              <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold max-w-[10rem] text-right">
+              <MCMark className="h-8 w-auto opacity-90" />
+              <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold max-w-[10rem] text-right">
                 Routine<br />Performance
               </p>
             </div>

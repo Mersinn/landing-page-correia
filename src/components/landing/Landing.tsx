@@ -1023,7 +1023,10 @@ export function Landing() {
       <Method />
       <TrainingNutrition />
       <RealLife />
+      <Benefits />
       <Services />
+      <Objections />
+      <Offer />
       <Faq />
       <FinalCta />
       <Footer />

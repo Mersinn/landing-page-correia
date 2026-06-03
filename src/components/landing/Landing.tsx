@@ -614,26 +614,13 @@ function TrainingNutrition() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden min-h-[110vh] flex items-end lg:items-center"
+      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden py-20 md:py-28 lg:py-32"
     >
-      {/* Full-bleed parallax photo — image is 140% tall so the 40% travel never reveals edges */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.img
-          src="/matheus-arnold.jpg"
-          alt="Matheus Correia no Arnold Sports Festival South America"
-          className="absolute left-0 right-0 -top-[20%] h-[140%] w-full object-cover object-[center_30%] will-change-transform"
-          style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-          draggable={false}
-        />
-        {/* Soft vignette only — photo stays visible across the section */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[var(--night)]/85 via-[var(--night)]/25 to-transparent lg:from-[var(--night)]/90 lg:via-[var(--night)]/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/80 via-transparent to-[var(--night)]/40" />
-      </div>
-
-      <div className="container-x relative w-full grid grid-cols-1 lg:grid-cols-12 gap-8 py-20 md:py-28 lg:py-40">
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Text */}
         <motion.div
           style={parallaxOn ? { y: textY } : undefined}
-          className="lg:col-span-6 xl:col-span-5"
+          className="lg:col-span-6 order-2 lg:order-1"
         >
           <motion.div
             initial={{ opacity: 0, y: 32 }}
@@ -645,17 +632,41 @@ function TrainingNutrition() {
               <span className="h-px w-10 bg-[var(--ice)]/40" />
               <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
             </div>
-            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[56px] leading-[0.98] tracking-[-0.045em]">
+            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em]">
               A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
               <span className="block">A nutrição constrói o resultado.</span>
             </h2>
-            <p className="mt-6 md:mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-md">
+            <p className="mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
               Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço aparecer no corpo.
             </p>
             <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
               Arnold Sports · South America
             </p>
           </motion.div>
+        </motion.div>
+
+        {/* Photo — own portrait frame, parallax stays inside */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.1, ease }}
+          className="lg:col-span-6 order-1 lg:order-2"
+        >
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
+            <motion.img
+              src="/matheus-arnold.jpg"
+              alt="Matheus Correia no Arnold Sports Festival South America"
+              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_25%] grayscale-[12%] contrast-[1.05] will-change-transform"
+              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
+              <span>Arnold · 2024</span>
+              <span>Treino · Performance</span>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

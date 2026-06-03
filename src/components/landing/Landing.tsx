@@ -237,7 +237,7 @@ function Pain() {
     <section className="relative bg-[var(--nearblack)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute -left-24 top-1/2 -translate-y-1/2 h-[640px] w-[640px] text-[var(--ice)]/[0.025]"
+        className="pointer-events-none select-none absolute -left-32 top-1/2 -translate-y-1/2 h-[360px] md:h-[460px] w-auto opacity-[0.04]"
       />
       <div className="container-x relative">
         <div className="flex items-center gap-3 mb-12">
@@ -393,7 +393,7 @@ function Method() {
     <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative overflow-hidden">
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute -left-32 -top-32 h-[480px] w-[480px] text-[var(--ice)]/[0.03]"
+        className="pointer-events-none select-none absolute -left-32 -top-16 h-[280px] md:h-[360px] w-auto opacity-[0.05]"
       />
       <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
         <div className="flex items-center gap-3 mb-6">
@@ -518,7 +518,7 @@ function TrainingNutrition() {
           <div className="absolute inset-0 bg-gradient-to-br from-[var(--nearblack)] via-[var(--deep)] to-[var(--nearblack)]" />
           <MCMark
             aria-hidden
-            className="absolute -right-12 -bottom-12 h-72 w-72 text-[var(--ice)]/[0.06]"
+            className="absolute -right-12 -bottom-8 h-32 md:h-40 w-auto opacity-[0.08]"
           />
           <div className="relative flex items-center justify-between text-[11px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold">
             <span>Frame 02</span>
@@ -726,7 +726,7 @@ function FinalCta() {
     <section className="relative bg-[var(--night)] text-[var(--ice)] py-28 md:py-40 overflow-hidden">
       <MCMark
         aria-hidden
-        className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-32 h-[680px] w-[680px] text-[var(--ice)]/[0.03]"
+        className="pointer-events-none select-none absolute left-1/2 -translate-x-1/2 -bottom-20 h-[320px] md:h-[440px] w-auto opacity-[0.05]"
       />
       <div className="container-x text-center max-w-5xl mx-auto relative">
         <div className="flex items-center justify-center gap-3 mb-10">
@@ -765,7 +765,7 @@ function Footer() {
     <footer className="bg-[var(--nearblack)] text-[var(--mute)] border-t border-[var(--ice)]/10">
       <div className="container-x py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] uppercase tracking-[0.22em] font-display font-semibold">
         <div className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-7 w-7 text-[var(--ice)]" />
+          <MCMark className="h-6 w-auto" />
           <span>Matheus Correia / Nutrição</span>
         </div>
         <span>© {new Date().getFullYear()} · Routine Performance</span>

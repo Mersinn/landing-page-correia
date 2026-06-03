@@ -184,7 +184,7 @@ function Hero() {
     <section
       ref={heroRef}
       id="top"
-      className="relative bg-[var(--night)] text-[var(--ice)] pt-28 md:pt-32 pb-16 md:pb-24 overflow-hidden"
+      className="relative bg-[var(--night)] text-[var(--ice)] pt-24 md:pt-28 pb-16 md:pb-24 overflow-hidden"
     >
       <Nav />
 
@@ -194,13 +194,13 @@ function Hero() {
         className="pointer-events-none select-none absolute -right-24 -bottom-16 h-[320px] md:h-[420px] w-auto opacity-[0.05]"
       />
 
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-end relative">
+      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start relative">
         <div className="lg:col-span-7">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 mb-10"
+            className="flex items-center gap-3 mb-6 md:mb-8"
           >
             <span className="h-px w-10 bg-[var(--ice)]/40" />
             <p className="eyebrow text-[var(--ice)]/60">Nutrição Clínica · Esportiva</p>

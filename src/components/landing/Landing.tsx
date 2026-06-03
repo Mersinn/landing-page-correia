@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, type CSSProperties } from "react";
 import mcSymbolWhite from "@/assets/mc-symbol-white.svg.asset.json";
 import matheusHero from "@/assets/matheus-hero.jpg.asset.json";
 
@@ -19,14 +19,30 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Photo container is 130% tall — image travels up to 15% in each direction.
-   * Always fits inside its frame, never crops past it. */
-  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
-  /* Subtle counter-movement on foreground text */
-  const textY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
-  /* Very subtle breath on the photo */
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1.0, 1.04]);
-  return { y, textY, scale, enabled: isDesktop && !prefersReduced };
+  /* Deep parallax — image moves a lot inside its 130% container */
+  const y = useTransform(scrollYProgress, [0, 1], ["-18%", "18%"]);
+  /* Frame itself drifts subtly the OPPOSITE way for layered depth */
+  const frameY = useTransform(scrollYProgress, [0, 1], ["4%", "-4%"]);
+  /* Counter-movement on foreground text */
+  const textY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
+  /* Cinematic breath on the photo */
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.0, 1.08]);
+  /* Frame scale — zooms in slightly as it crosses center */
+  const frameScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 1.0, 0.98]);
+  /* Horizontal wipe line that travels across the image on scroll */
+  const wipeX = useTransform(scrollYProgress, [0, 1], ["-110%", "110%"]);
+  /* Caption opacity peaks in the middle */
+  const captionOpacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
+  return {
+    y,
+    frameY,
+    textY,
+    scale,
+    frameScale,
+    wipeX,
+    captionOpacity,
+    enabled: isDesktop && !prefersReduced,
+  };
 }
 
 const fadeUp: Variants = {
@@ -608,9 +624,138 @@ function Method() {
 }
 
 /* -------------------- Training + Nutrition -------------------- */
+type MotionVal = ReturnType<typeof useTransform<number, string>> | ReturnType<typeof useTransform<number, number>>;
+
+function ImmersivePhoto({
+  src,
+  alt,
+  objectPos,
+  topCaption,
+  bottomCaption,
+  tagNumber,
+  className = "",
+  parallaxOn,
+  photoY,
+  frameY,
+  scale,
+  frameScale,
+  wipeX,
+  captionOpacity,
+}: {
+  src: string;
+  alt: string;
+  objectPos: string;
+  topCaption: string;
+  bottomCaption: string;
+  tagNumber: string;
+  className?: string;
+  parallaxOn: boolean;
+  photoY: MotionVal;
+  frameY: MotionVal;
+  scale: MotionVal;
+  frameScale: MotionVal;
+  wipeX: MotionVal;
+  captionOpacity: MotionVal;
+}) {
+  const imgStyle = parallaxOn
+    ? ({ y: photoY, scale } as unknown as CSSProperties)
+    : ({ scale: 1.04 } as unknown as CSSProperties);
+  const frameStyle = parallaxOn
+    ? ({ y: frameY, scale: frameScale } as unknown as CSSProperties)
+    : undefined;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 1.1, ease }}
+      className={className}
+    >
+      <motion.div
+        style={frameStyle}
+        className="relative aspect-[4/5] w-full will-change-transform"
+      >
+        {/* Thin frame ring */}
+        <div className="absolute -inset-px border border-[var(--ice)]/15 pointer-events-none z-20" />
+        {/* Corner tag */}
+        <div className="absolute -top-3 -left-3 z-30 hidden md:flex h-10 w-10 items-center justify-center bg-[var(--ice)] text-[var(--night)] font-display font-extrabold text-[11px] tracking-[0.18em]">
+          {tagNumber}
+        </div>
+
+        <div className="relative h-full w-full overflow-hidden bg-[var(--deep)]">
+          {/* Curtain reveal on enter */}
+          <motion.div
+            initial={{ scaleY: 1 }}
+            whileInView={{ scaleY: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 1.2, ease, delay: 0.1 }}
+            style={{ originY: 0 }}
+            className="absolute inset-0 z-10 bg-[var(--nearblack)]"
+            aria-hidden
+          />
+
+          <motion.img
+            src={src}
+            alt={alt}
+            initial={{ scale: 1.18, filter: "blur(8px)" }}
+            whileInView={{ scale: 1.04, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 1.6, ease, delay: 0.2 }}
+            className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover grayscale-[12%] contrast-[1.05] will-change-transform"
+            style={{ ...imgStyle, objectPosition: objectPos }}
+            draggable={false}
+          />
+
+          {/* Gradient depth */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/75 via-[var(--night)]/10 to-transparent z-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[var(--night)]/40 z-10" />
+
+          {/* Wipe line traveling across on scroll */}
+          {parallaxOn && (
+            <motion.div
+              aria-hidden
+              style={{ x: wipeX } as unknown as CSSProperties}
+              className="absolute top-0 bottom-0 w-[40%] z-10 pointer-events-none bg-gradient-to-r from-transparent via-[var(--ice)]/8 to-transparent mix-blend-screen"
+            />
+          )}
+
+          {/* Top caption */}
+          <motion.div
+            style={parallaxOn ? ({ opacity: captionOpacity } as unknown as CSSProperties) : undefined}
+            className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold"
+          >
+            <span className="flex items-center gap-2">
+              <span className="h-px w-6 bg-[var(--ice)]/60" />
+              {topCaption}
+            </span>
+            <span>{bottomCaption}</span>
+          </motion.div>
+
+          {/* Bottom watermark */}
+          <div className="absolute bottom-5 left-5 right-5 z-20 flex items-end justify-between">
+            <MCMark className="h-7 w-auto opacity-80" />
+            <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/60 font-display font-semibold">
+              MC / Nutrição
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function TrainingNutrition() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { y: photoY, textY, scale, enabled: parallaxOn } = useParallax(sectionRef);
+  const {
+    y: photoY,
+    frameY,
+    textY,
+    scale,
+    frameScale,
+    wipeX,
+    captionOpacity,
+    enabled: parallaxOn,
+  } = useParallax(sectionRef);
   return (
     <section
       ref={sectionRef}
@@ -645,29 +790,22 @@ function TrainingNutrition() {
           </motion.div>
         </motion.div>
 
-        {/* Photo — own portrait frame, parallax stays inside */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 1.1, ease }}
+        <ImmersivePhoto
+          src="/matheus-arnold.jpg"
+          alt="Matheus Correia no Arnold Sports Festival South America"
+          objectPos="center 25%"
+          topCaption="Arnold · 2024"
+          bottomCaption="Treino · Performance"
+          tagNumber="05"
           className="lg:col-span-6 order-1 lg:order-2"
-        >
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
-            <motion.img
-              src="/matheus-arnold.jpg"
-              alt="Matheus Correia no Arnold Sports Festival South America"
-              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_25%] grayscale-[12%] contrast-[1.05] will-change-transform"
-              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-              draggable={false}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
-              <span>Arnold · 2024</span>
-              <span>Treino · Performance</span>
-            </div>
-          </div>
-        </motion.div>
+          parallaxOn={parallaxOn}
+          photoY={photoY}
+          frameY={frameY}
+          scale={scale}
+          frameScale={frameScale}
+          wipeX={wipeX}
+          captionOpacity={captionOpacity}
+        />
       </div>
     </section>
   );
@@ -676,36 +814,38 @@ function TrainingNutrition() {
 /* -------------------- Real Life -------------------- */
 function RealLife() {
   const sectionRef = useRef<HTMLElement>(null);
-  const { y: photoY, textY, scale, enabled: parallaxOn } = useParallax(sectionRef);
+  const {
+    y: photoY,
+    frameY,
+    textY,
+    scale,
+    frameScale,
+    wipeX,
+    captionOpacity,
+    enabled: parallaxOn,
+  } = useParallax(sectionRef);
   return (
     <section
       ref={sectionRef}
       className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden py-20 md:py-28 lg:py-32"
     >
       <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-        {/* Photo first on desktop — burger frame fully visible */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 1.1, ease }}
+        <ImmersivePhoto
+          src="/matheus-burger.jpg"
+          alt="Matheus Correia — alimentação real com estratégia"
+          objectPos="center 40%"
+          topCaption="Vida real"
+          bottomCaption="Estratégia · não proibição"
+          tagNumber="06"
           className="lg:col-span-6"
-        >
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
-            <motion.img
-              src="/matheus-burger.jpg"
-              alt="Matheus Correia — alimentação real com estratégia"
-              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_40%] grayscale-[12%] contrast-[1.05] will-change-transform"
-              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-              draggable={false}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
-              <span>Vida real</span>
-              <span>Estratégia · não proibição</span>
-            </div>
-          </div>
-        </motion.div>
+          parallaxOn={parallaxOn}
+          photoY={photoY}
+          frameY={frameY}
+          scale={scale}
+          frameScale={frameScale}
+          wipeX={wipeX}
+          captionOpacity={captionOpacity}
+        />
 
         {/* Text */}
         <motion.div
@@ -754,50 +894,87 @@ function Services() {
   return (
     <section
       id="servicos"
-      className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32"
+      className="relative bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32 overflow-hidden"
     >
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-5">
-          <div className="flex items-center gap-3 mb-6">
+      <MCMark
+        aria-hidden
+        className="pointer-events-none select-none absolute -right-32 -bottom-24 h-[420px] md:h-[560px] w-auto opacity-[0.04]"
+      />
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+        <div className="lg:col-span-4">
+          <div className="flex items-center gap-3 mb-6 lg:sticky lg:top-24">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">Serviços</p>
+            <p className="eyebrow text-[var(--mute)]">Serviços</p>
           </div>
-          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
-            Um trabalho,<br />vários objetivos.
-          </h2>
-          <p className="mt-6 text-[var(--mute)] text-base leading-relaxed max-w-md">
-            Matheus Correia une prática clínica, vivência no treino e atualização constante no universo fitness para construir planos que não existem só no papel.
-          </p>
-          <div className="mt-8 inline-flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold border border-[var(--ice)]/15 rounded-lg px-5 py-4">
-            <span>Nutricionista</span>
-            <span>Atendimento presencial / online</span>
+          <div className="lg:sticky lg:top-32">
+            <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-[64px] tracking-[-0.045em] leading-[0.95]">
+              Um trabalho,
+              <span className="block text-[var(--mute)]">vários objetivos.</span>
+            </h2>
+            <p className="mt-8 text-[var(--mute)] text-base leading-relaxed max-w-md">
+              Prática clínica, vivência no treino e atualização constante — planos que não existem só no papel.
+            </p>
+            <div className="mt-10 flex flex-col gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
+              <span className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Presencial
+              </span>
+              <span className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Online
+              </span>
+              <span className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Acompanhamento contínuo
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {SERVICES.map((s, i) => (
-            <motion.div
-              key={s.t}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.06 }}
-              className="group border border-[var(--ice)]/12 bg-[var(--deep)] hover:bg-[var(--petrol)] hover:border-[var(--ice)]/35 transition-colors p-6 rounded-lg"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <h3 className="font-display font-bold text-xl md:text-2xl tracking-[-0.03em]">
-                  {s.t}
-                </h3>
-                <span className="text-[10px] tabular-nums text-[var(--mute)] font-display font-semibold tracking-[0.2em] group-hover:text-[var(--ice)] transition-colors">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <p className="mt-3 text-sm text-[var(--mute)] leading-relaxed">{s.d}</p>
-            </motion.div>
-          ))}
+        <div className="lg:col-span-8">
+          <div className="border-t border-[var(--ice)]/15">
+            {SERVICES.map((s, i) => (
+              <ServiceRow key={s.t} index={i} title={s.t} desc={s.d} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function ServiceRow({ index, title, desc }: { index: number; title: string; desc: string }) {
+  return (
+    <motion.a
+      href={WHATSAPP}
+      target="_blank"
+      rel="noreferrer"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: index * 0.05, ease }}
+      className="group relative block border-b border-[var(--ice)]/15 py-7 md:py-8 isolate overflow-hidden"
+    >
+      {/* Hover fill — wipes in from left */}
+      <span
+        aria-hidden
+        className="absolute inset-0 -z-10 origin-left scale-x-0 bg-[var(--petrol)]/35 transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+      />
+      <div className="grid grid-cols-12 gap-4 md:gap-8 items-baseline px-2 md:px-4">
+        <span className="col-span-2 md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <h3 className="col-span-10 md:col-span-5 font-display font-extrabold text-2xl md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+          {title}
+        </h3>
+        <p className="col-span-10 col-start-3 md:col-span-5 md:col-start-auto text-sm md:text-base text-[var(--mute)] leading-relaxed group-hover:text-[var(--ice)]/85 transition-colors duration-300">
+          {desc}
+        </p>
+        <span
+          aria-hidden
+          className="hidden md:flex col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
+        >
+          →
+        </span>
+      </div>
+    </motion.a>
   );
 }
 

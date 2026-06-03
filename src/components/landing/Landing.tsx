@@ -894,50 +894,87 @@ function Services() {
   return (
     <section
       id="servicos"
-      className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32"
+      className="relative bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32 overflow-hidden"
     >
-      <div className="container-x grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-5">
-          <div className="flex items-center gap-3 mb-6">
+      <MCMark
+        aria-hidden
+        className="pointer-events-none select-none absolute -right-32 -bottom-24 h-[420px] md:h-[560px] w-auto opacity-[0.04]"
+      />
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+        <div className="lg:col-span-4">
+          <div className="flex items-center gap-3 mb-6 lg:sticky lg:top-24">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-          <p className="eyebrow text-[var(--mute)]">Serviços</p>
+            <p className="eyebrow text-[var(--mute)]">Serviços</p>
           </div>
-          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
-            Um trabalho,<br />vários objetivos.
-          </h2>
-          <p className="mt-6 text-[var(--mute)] text-base leading-relaxed max-w-md">
-            Matheus Correia une prática clínica, vivência no treino e atualização constante no universo fitness para construir planos que não existem só no papel.
-          </p>
-          <div className="mt-8 inline-flex flex-col gap-1 text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold border border-[var(--ice)]/15 rounded-lg px-5 py-4">
-            <span>Nutricionista</span>
-            <span>Atendimento presencial / online</span>
+          <div className="lg:sticky lg:top-32">
+            <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-[64px] tracking-[-0.045em] leading-[0.95]">
+              Um trabalho,
+              <span className="block text-[var(--mute)]">vários objetivos.</span>
+            </h2>
+            <p className="mt-8 text-[var(--mute)] text-base leading-relaxed max-w-md">
+              Prática clínica, vivência no treino e atualização constante — planos que não existem só no papel.
+            </p>
+            <div className="mt-10 flex flex-col gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
+              <span className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Presencial
+              </span>
+              <span className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Online
+              </span>
+              <span className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[var(--ice)]/30" /> Acompanhamento contínuo
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {SERVICES.map((s, i) => (
-            <motion.div
-              key={s.t}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.06 }}
-              className="group border border-[var(--ice)]/12 bg-[var(--deep)] hover:bg-[var(--petrol)] hover:border-[var(--ice)]/35 transition-colors p-6 rounded-lg"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <h3 className="font-display font-bold text-xl md:text-2xl tracking-[-0.03em]">
-                  {s.t}
-                </h3>
-                <span className="text-[10px] tabular-nums text-[var(--mute)] font-display font-semibold tracking-[0.2em] group-hover:text-[var(--ice)] transition-colors">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <p className="mt-3 text-sm text-[var(--mute)] leading-relaxed">{s.d}</p>
-            </motion.div>
-          ))}
+        <div className="lg:col-span-8">
+          <div className="border-t border-[var(--ice)]/15">
+            {SERVICES.map((s, i) => (
+              <ServiceRow key={s.t} index={i} title={s.t} desc={s.d} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function ServiceRow({ index, title, desc }: { index: number; title: string; desc: string }) {
+  return (
+    <motion.a
+      href={WHATSAPP}
+      target="_blank"
+      rel="noreferrer"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: index * 0.05, ease }}
+      className="group relative block border-b border-[var(--ice)]/15 py-7 md:py-8 isolate overflow-hidden"
+    >
+      {/* Hover fill — wipes in from left */}
+      <span
+        aria-hidden
+        className="absolute inset-0 -z-10 origin-left scale-x-0 bg-[var(--petrol)]/35 transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+      />
+      <div className="grid grid-cols-12 gap-4 md:gap-8 items-baseline px-2 md:px-4">
+        <span className="col-span-2 md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <h3 className="col-span-10 md:col-span-5 font-display font-extrabold text-2xl md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+          {title}
+        </h3>
+        <p className="col-span-10 col-start-3 md:col-span-5 md:col-start-auto text-sm md:text-base text-[var(--mute)] leading-relaxed group-hover:text-[var(--ice)]/85 transition-colors duration-300">
+          {desc}
+        </p>
+        <span
+          aria-hidden
+          className="hidden md:flex col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
+        >
+          →
+        </span>
+      </div>
+    </motion.a>
   );
 }
 

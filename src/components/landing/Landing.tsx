@@ -714,7 +714,7 @@ function Objections() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">08 — Objeções</p>
+            <p className="eyebrow text-[var(--mute)]">09 — Objeções</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Antes de pensar{" "}
@@ -782,7 +782,7 @@ function Offer() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">09 — Como funciona</p>
+            <p className="eyebrow text-[var(--mute)]">10 — Como funciona</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Como funciona o{" "}
@@ -841,7 +841,7 @@ function Services() {
         <div className="lg:col-span-5">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">07 — Serviços + Sobre</p>
+            <p className="eyebrow text-[var(--mute)]">08 — Serviços + Sobre</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Um trabalho,<br />vários objetivos.
@@ -904,7 +904,7 @@ function Faq() {
         <div className="lg:col-span-4">
           <div className="flex items-center gap-3 mb-6">
             <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">08 — Perguntas</p>
+            <p className="eyebrow text-[var(--mute)]">11 — Perguntas</p>
           </div>
           <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
             Antes da primeira consulta.

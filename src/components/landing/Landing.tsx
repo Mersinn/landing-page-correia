@@ -19,14 +19,13 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Strong, visible parallax — image travels in the opposite direction of scroll.
-   * Photo container is 140% tall, so this 40% range never reveals the edge. */
-  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
-  /* Counter-parallax for foreground text — moves the OPPOSITE way, slower,
-   * creating real depth between photo and copy. */
-  const textY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
-  /* Subtle scale breath on the photo as the section passes through viewport */
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.0, 1.08]);
+  /* Photo container is 130% tall — image travels up to 15% in each direction.
+   * Always fits inside its frame, never crops past it. */
+  const y = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
+  /* Subtle counter-movement on foreground text */
+  const textY = useTransform(scrollYProgress, [0, 1], ["6%", "-6%"]);
+  /* Very subtle breath on the photo */
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.04, 1.0, 1.04]);
   return { y, textY, scale, enabled: isDesktop && !prefersReduced };
 }
 

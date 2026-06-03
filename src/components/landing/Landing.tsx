@@ -680,47 +680,60 @@ function RealLife() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden min-h-[110vh] flex items-end"
+      className="relative bg-[var(--night)] text-[var(--ice)] overflow-hidden py-20 md:py-28 lg:py-32"
     >
-      {/* Full-bleed parallax photo dominates the top ~60% of the section */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.img
-          src="/matheus-burger.jpg"
-          alt="Matheus Correia — alimentação real com estratégia"
-          className="absolute left-0 right-0 -top-[20%] h-[140%] w-full object-cover object-[center_45%] will-change-transform"
-          style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
-          draggable={false}
-        />
-        {/* Only the bottom band darkens — photo breathes in the upper 55% */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,var(--night)_0%,var(--night)_28%,rgba(5,6,7,0.55)_55%,transparent_78%)]" />
-      </div>
-
-      <div className="container-x relative w-full pb-16 md:pb-24 pt-[55vh] md:pt-[60vh]">
-        <motion.div style={parallaxOn ? { y: textY } : undefined}>
-          <div className="flex items-center gap-3 mb-6">
-            <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">Vida real</p>
-          </div>
-          <motion.h2
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true }}
-            className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[64px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)] max-w-4xl"
-          >
-            Hambúrguer, chocolate e vida social{" "}
-            <span className="text-[var(--mute)]">não precisam ser o fim do seu resultado.</span>
-          </motion.h2>
-
-          <div className="mt-8 md:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 max-w-5xl">
-            <div className="lg:col-span-7 space-y-4 text-[var(--ice)]/80 text-base md:text-lg leading-relaxed">
-              <p>O problema não é uma refeição fora do plano. É não ter estratégia para lidar com ela.</p>
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+        {/* Photo first on desktop — burger frame fully visible */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.1, ease }}
+          className="lg:col-span-6"
+        >
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[var(--deep)] border border-[var(--ice)]/10">
+            <motion.img
+              src="/matheus-burger.jpg"
+              alt="Matheus Correia — alimentação real com estratégia"
+              className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover object-[center_40%] grayscale-[12%] contrast-[1.05] will-change-transform"
+              style={parallaxOn ? { y: photoY, scale } : { scale: 1.02 }}
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
+            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
+              <span>Vida real</span>
+              <span>Estratégia · não proibição</span>
             </div>
-            <h3 className="lg:col-span-5 font-display font-bold text-xl md:text-2xl tracking-[-0.03em] leading-[1.1] self-end">
+          </div>
+        </motion.div>
+
+        {/* Text */}
+        <motion.div
+          style={parallaxOn ? { y: textY } : undefined}
+          className="lg:col-span-6"
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, ease }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Vida real</p>
+            </div>
+            <h2 className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
+              Hambúrguer, chocolate e vida social{" "}
+              <span className="text-[var(--mute)]">não precisam ser o fim do seu resultado.</span>
+            </h2>
+            <p className="mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
+              O problema não é uma refeição fora do plano. É não ter estratégia para lidar com ela.
+            </p>
+            <h3 className="mt-10 font-display font-bold text-xl md:text-2xl tracking-[-0.03em] leading-[1.15]">
               O plano certo não te prende.
               <span className="block text-[var(--mute)]">Te dá direção.</span>
             </h3>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

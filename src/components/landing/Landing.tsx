@@ -924,30 +924,45 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.05, ease }}
-      className="group relative block border-b border-[var(--ice)]/15 py-7 md:py-8 isolate overflow-hidden"
+      transition={{ duration: 0.5, delay: index * 0.04, ease }}
+      className="group relative block border-b border-[var(--ice)]/15 isolate overflow-hidden"
     >
       {/* Hover fill — wipes in from left */}
       <span
         aria-hidden
-        className="absolute inset-0 -z-10 origin-left scale-x-0 bg-[var(--petrol)]/35 transition-transform duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
+        className="absolute inset-0 origin-left scale-x-0 bg-[var(--petrol)]/35 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100"
       />
-      <div className="grid grid-cols-12 gap-4 md:gap-8 items-baseline px-2 md:px-4">
-        <span className="col-span-2 md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-        <h3 className="col-span-10 md:col-span-5 font-display font-extrabold text-2xl md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
-          {title}
-        </h3>
-        <p className="col-span-10 col-start-3 md:col-span-5 md:col-start-auto text-sm md:text-base text-[var(--mute)] leading-relaxed group-hover:text-[var(--ice)]/85 transition-colors duration-300">
-          {desc}
-        </p>
-        <span
-          aria-hidden
-          className="hidden md:flex col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
-        >
-          →
-        </span>
+      <div className="relative px-2 md:px-6 py-7 md:py-10">
+        {/* Mobile: stacked. Desktop: 3 columns */}
+        <div className="md:grid md:grid-cols-12 md:gap-8 md:items-center">
+          {/* Row 1 on mobile: number + arrow */}
+          <div className="flex items-center justify-between md:contents">
+            <span className="md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span
+              aria-hidden
+              className="md:hidden text-[var(--ice)]/60 text-lg leading-none group-hover:text-[var(--ice)] transition-colors"
+            >
+              →
+            </span>
+          </div>
+
+          <h3 className="md:col-span-5 mt-3 md:mt-0 font-display font-extrabold text-[26px] md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+            {title}
+          </h3>
+
+          <p className="md:col-span-5 mt-3 md:mt-0 text-sm md:text-base text-[var(--mute)] leading-relaxed max-w-md group-hover:text-[var(--ice)]/85 transition-colors duration-300">
+            {desc}
+          </p>
+
+          <span
+            aria-hidden
+            className="hidden md:flex md:col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
+          >
+            →
+          </span>
+        </div>
       </div>
     </motion.a>
   );

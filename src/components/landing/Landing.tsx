@@ -19,8 +19,8 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Lower amplitude so the photo never reveals the empty container edge */
-  const y = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
+  /* Strong, visible parallax — image is scaled 1.3 to absorb the travel */
+  const y = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"]);
   return { y, enabled: isDesktop && !prefersReduced };
 }
 

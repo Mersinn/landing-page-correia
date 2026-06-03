@@ -19,7 +19,8 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  /* Lower amplitude so the photo never reveals the empty container edge */
+  const y = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
   return { y, enabled: isDesktop && !prefersReduced };
 }
 
@@ -53,7 +54,7 @@ function Cta({
 }) {
   const prefersReduced = useReducedMotion();
   const base =
-    "group relative inline-flex items-center justify-center gap-3 px-7 py-4 text-[12px] font-semibold tracking-[0.18em] uppercase rounded-full overflow-hidden";
+    "group relative inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] md:text-[12px] font-display font-semibold tracking-[0.22em] uppercase rounded-full overflow-hidden whitespace-nowrap leading-none isolate";
 
   /* Reduced-motion or non-ice variants: simple Tailwind hover (CSS handles instant transition) */
   if (variant !== "ice" || prefersReduced) {
@@ -71,8 +72,8 @@ function Cta({
         rel="noreferrer"
         className={`${base} ${variantClass[variant]} ${className}`}
       >
-        {children}
-        <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+        <span className="relative z-10">{children}</span>
+        <span aria-hidden className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-x-1">
           →
         </span>
       </a>
@@ -85,17 +86,18 @@ function Cta({
       href={WHATSAPP}
       target="_blank"
       rel="noreferrer"
-      className={`${base} bg-[var(--ice)] text-[var(--night)] ${className}`}
+      className={`${base} bg-[var(--ice)] text-[var(--night)] shadow-[0_10px_30px_-12px_rgba(244,247,248,0.35)] ${className}`}
       whileHover="hover"
+      whileTap={{ scale: 0.98 }}
       initial="rest"
     >
-      {/* Fill layer — pill-shaped, scales from left */}
+      {/* Fill layer — scales from left */}
       <motion.span
         aria-hidden
-        className="absolute inset-0 rounded-full bg-[var(--deep)]"
+        className="absolute inset-0 bg-[var(--deep)]"
         style={{ originX: 0 }}
         variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       />
       {/* Text + arrow — sit above fill, swap colour on hover */}
       <motion.span
@@ -104,13 +106,14 @@ function Cta({
           rest: { color: "var(--night)" },
           hover: { color: "var(--ice)" },
         }}
-        transition={{ duration: 0.38 }}
+        transition={{ duration: 0.4, ease }}
       >
         {children}
         <motion.span
           aria-hidden
-          variants={{ rest: { x: 0 }, hover: { x: 4 } }}
-          transition={{ duration: 0.3 }}
+          variants={{ rest: { x: 0 }, hover: { x: 6 } }}
+          transition={{ duration: 0.4, ease }}
+          className="inline-block"
         >
           →
         </motion.span>
@@ -165,13 +168,12 @@ function Hero() {
     offset: ["start start", "end start"],
   });
   /* Image drifts up as hero scrolls out — gradient at bottom hides any sub-pixel gap */
-  const parallaxY = useTransform(heroScroll, [0, 1], ["0%", "-8%"]);
+  const parallaxY = useTransform(heroScroll, [0, 1], ["0%", "-6%"]);
   const enableParallax = isDesktop && !prefersReduced;
 
   const headline = [
     "Nutrição para quem cansou",
     "de começar do zero",
-    "toda segunda-feira.",
   ];
   return (
     <section
@@ -212,6 +214,16 @@ function Hero() {
                 </motion.span>
               </span>
             ))}
+            <span className="block overflow-hidden">
+              <motion.span
+                initial={{ y: "110%" }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.95, delay: 0.15 + headline.length * 0.12, ease }}
+                className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] tracking-[-0.02em] mt-2 md:mt-4"
+              >
+                toda segunda-feira.
+              </motion.span>
+            </span>
           </h1>
 
           <motion.p
@@ -252,8 +264,8 @@ function Hero() {
             <motion.img
               src={matheusHero.url}
               alt="Matheus Correia, nutricionista"
-              className="absolute inset-0 h-full w-full object-cover object-center grayscale-[15%] contrast-[1.05] scale-[1.12]"
-              style={enableParallax ? { y: parallaxY } : {}}
+              className="absolute inset-0 h-full w-full object-cover object-[center_28%] grayscale-[15%] contrast-[1.05]"
+              style={enableParallax ? { y: parallaxY, scale: 1.15 } : { scale: 1.08, transformOrigin: "center" }}
               draggable={false}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
@@ -470,7 +482,7 @@ function Method() {
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
-    <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative overflow-hidden">
+    <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative">
       <MCMark
         aria-hidden
         className="pointer-events-none select-none absolute -left-32 -top-16 h-[280px] md:h-[360px] w-auto opacity-[0.05]"
@@ -600,8 +612,8 @@ function TrainingNutrition() {
           <motion.img
             src="/matheus-arnold.jpg"
             alt="Matheus Correia no Arnold Sports Festival South America"
-            className="absolute inset-0 h-full w-full object-cover object-top scale-[1.12]"
-            style={parallaxOn ? { y: photoY } : {}}
+            className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
+            style={parallaxOn ? { y: photoY, scale: 1.12 } : { scale: 1.06 }}
             draggable={false}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/60 via-transparent to-transparent" />
@@ -679,8 +691,8 @@ function RealLife() {
             <motion.img
               src="/matheus-burger.jpg"
               alt="Matheus Correia — alimentação real com estratégia"
-              className="absolute inset-0 h-full w-full object-cover object-center scale-[1.12]"
-              style={parallaxOn ? { y: photoY } : {}}
+              className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
+              style={parallaxOn ? { y: photoY, scale: 1.12 } : { scale: 1.06 }}
               draggable={false}
             />
           </motion.div>

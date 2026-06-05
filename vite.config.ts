@@ -15,5 +15,17 @@ export default defineConfig({
   // Force-enable the Nitro deploy plugin with the Vercel preset when building
   // outside a Lovable context (e.g. on Vercel CI). Without this the plugin
   // auto-skips Nitro and Vercel has no server output to run → 404 NOT_FOUND.
-  nitro: { preset: "vercel" },
+  //
+  // The Lovable wrapper hardcodes Nitro's output to dist/ + dist/server, which
+  // breaks Vercel's Build Output API (the SSR entry lands in static, not as a
+  // Function → catch-all 404). Override output to the canonical layout so the
+  // Vercel preset emits .vercel/output/functions/__server.func + static.
+  nitro: {
+    preset: "vercel",
+    output: {
+      dir: ".vercel/output",
+      serverDir: ".vercel/output/functions/__server.func",
+      publicDir: ".vercel/output/static",
+    },
+  },
 });

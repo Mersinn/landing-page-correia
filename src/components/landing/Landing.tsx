@@ -1,5 +1,6 @@
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect, type CSSProperties } from "react";
+import { ChevronRight } from "lucide-react";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
@@ -14,7 +15,7 @@ const focusRing =
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/* Shared parallax hook — desktop only, respects prefers-reduced-motion */
+/* Shared parallax hook — light motion on mobile + desktop, respects prefers-reduced-motion */
 function useParallax(ref: React.RefObject<HTMLElement | null>) {
   const prefersReduced = useReducedMotion();
   const [isDesktop, setIsDesktop] = useState(false);
@@ -26,14 +27,13 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     return () => mq.removeEventListener("change", h);
   }, []);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  /* Deep parallax — image moves a lot inside its 130% container */
-  const y = useTransform(scrollYProgress, [0, 1], ["-18%", "18%"]);
-  /* Frame itself drifts subtly the OPPOSITE way for layered depth */
+  /* Image drift — % on desktop, px on mobile (perceptible) kept within the 130%+scale crop so edges never show */
+  const y = useTransform(scrollYProgress, [0, 1], isDesktop ? ["-22%", "22%"] : ["52px", "-52px"]);
+  /* Frame counter-drift + foreground text — desktop-only effects (gated by `deep` in the view) */
   const frameY = useTransform(scrollYProgress, [0, 1], ["4%", "-4%"]);
-  /* Counter-movement on foreground text */
   const textY = useTransform(scrollYProgress, [0, 1], ["8%", "-8%"]);
-  /* Cinematic breath on the photo */
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.0, 1.08]);
+  /* Cinematic breath on the photo — subtler on mobile */
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], isDesktop ? [1.1, 1.0, 1.1] : [1.12, 1.02, 1.12]);
   /* Frame scale — zooms in slightly as it crosses center */
   const frameScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.96, 1.0, 0.98]);
   /* Horizontal wipe line that travels across the image on scroll */
@@ -48,7 +48,10 @@ function useParallax(ref: React.RefObject<HTMLElement | null>) {
     frameScale,
     wipeX,
     captionOpacity,
-    enabled: isDesktop && !prefersReduced,
+    /* Light parallax (image y + scale) runs on mobile too; heavy depth (frame, wipe,
+     * caption fade, text counter-move) stays desktop-only via `isDesktop`. */
+    enabled: !prefersReduced,
+    isDesktop,
   };
 }
 
@@ -94,25 +97,112 @@ function Cta({
   children: React.ReactNode;
   className?: string;
 }) {
-  const base =
-    "group inline-flex items-center justify-center gap-3 px-8 py-4 text-[11px] md:text-[12px] font-display font-semibold tracking-[0.22em] uppercase rounded-full whitespace-nowrap leading-none transition-colors duration-300";
-  const variantClass: Record<string, string> = {
-    ice: "bg-[var(--ice)] text-[var(--night)] hover:bg-[var(--mute)] hover:text-[var(--ice)]",
-    outline:
-      "border border-[var(--ice)]/30 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)]",
-    ghostDark:
-      "border border-[var(--night)] text-[var(--night)] hover:bg-[var(--night)] hover:text-[var(--ice)]",
+  const prefersReduced = useReducedMotion();
+  const [isPressed, setIsPressed] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const pressTimer = useRef<number | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => {
+      mq.removeEventListener("change", update);
+      if (pressTimer.current) window.clearTimeout(pressTimer.current);
+    };
+  }, []);
+  /* Touch devices have no hover, so press state drives the same expansion desktop gets from
+   * `group-hover`. The short 180ms hold lets the inversion register even on a quick tap. */
+  const pressOn = () => {
+    if (pressTimer.current) {
+      window.clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+    setIsPressed(true);
   };
+  const pressOff = () => {
+    if (pressTimer.current) window.clearTimeout(pressTimer.current);
+    pressTimer.current = window.setTimeout(() => setIsPressed(false), 180);
+  };
+  const base =
+    "group relative inline-flex min-h-[54px] md:min-h-[56px] items-center justify-center overflow-hidden rounded-full pl-6 md:pl-8 pr-14 md:pr-16 text-[11px] md:text-[13px] font-display font-bold tracking-[0.1em] md:tracking-[0.2em] uppercase whitespace-nowrap leading-none";
+  /* Each variant defines the resting colours, the lateral panel that expands on hover/press,
+   * and the colour of the label that re-appears once the panel has filled the button. */
+  const v: Record<string, { root: string; panel: string; fill: string }> = {
+    ice: {
+      root: "bg-[var(--ice)] text-[var(--night)]",
+      panel: "bg-[var(--night)] text-[var(--ice)]",
+      fill: "text-[var(--ice)]",
+    },
+    outline: {
+      root: "border border-[var(--ice)]/40 text-[var(--ice)]",
+      panel: "bg-[var(--ice)] text-[var(--night)]",
+      fill: "text-[var(--night)]",
+    },
+    ghostDark: {
+      root: "border border-[var(--night)] text-[var(--night)]",
+      panel: "bg-[var(--night)] text-[var(--ice)]",
+      fill: "text-[var(--ice)]",
+    },
+  };
+  const c = v[variant];
   return (
-    <a
+    <motion.a
       href={WHATSAPP}
       target="_blank"
       rel="noreferrer"
-      className={`${base} ${focusRing} ${variantClass[variant]} ${className}`}
+      whileHover={prefersReduced ? undefined : { scale: 1.015 }}
+      whileTap={prefersReduced ? undefined : { scale: 0.96 }}
+      transition={{ duration: 0.25, ease }}
+      onPointerDown={pressOn}
+      onPointerUp={pressOff}
+      onPointerLeave={pressOff}
+      onPointerCancel={pressOff}
+      onTouchStart={pressOn}
+      onTouchEnd={pressOff}
+      className={`${base} ${focusRing} ${c.root} ${className}`}
     >
-      <span>{children}</span>
-      <span aria-hidden>→</span>
-    </a>
+      {/* Resting label — fades out as the panel takes over (hover on desktop, press on touch) */}
+      <span
+        className={`relative z-10 transition-opacity duration-500 md:group-hover:opacity-0 ${
+          isPressed ? "opacity-0" : ""
+        }`}
+      >
+        {children}
+      </span>
+      {/* Lateral chevron panel — visible affordance at rest; expands to fill (+invert) on hover/press */}
+      <span
+        aria-hidden
+        className={`absolute right-1.5 top-1.5 bottom-1.5 z-20 grid place-items-center rounded-full ${
+          c.panel
+        } transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:group-hover:w-[calc(100%-0.75rem)] ${
+          isPressed ? "w-[calc(100%-0.75rem)]" : "w-12"
+        }`}
+      >
+        {/* On touch (no hover) a discreet endless nudge signals the button is live */}
+        <motion.span
+          aria-hidden
+          animate={prefersReduced || isDesktop ? { x: 0 } : { x: [0, 4, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="grid place-items-center"
+        >
+          <ChevronRight
+            size={18}
+            strokeWidth={2.5}
+            className="md:transition-transform md:duration-500 md:group-hover:translate-x-0.5"
+          />
+        </motion.span>
+      </span>
+      {/* Label re-appears centred over the filled panel */}
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 z-30 flex items-center justify-center transition-opacity duration-500 md:group-hover:opacity-100 ${
+          c.fill
+        } ${isPressed ? "opacity-100" : "opacity-0"}`}
+      >
+        {children}
+      </span>
+    </motion.a>
   );
 }
 
@@ -136,9 +226,12 @@ function Nav() {
           href={WHATSAPP}
           target="_blank"
           rel="noreferrer"
-          className={`inline-flex items-center gap-2 min-h-[44px] text-[10px] md:text-[11px] uppercase tracking-[0.24em] font-display font-semibold border border-[var(--ice)]/30 rounded-full px-4 py-2.5 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors ${focusRing}`}
+          className={`group inline-flex items-center gap-2 min-h-[44px] text-[10px] md:text-[11px] uppercase tracking-[0.24em] font-display font-semibold border border-[var(--ice)]/30 rounded-full px-4 py-2.5 text-[var(--ice)] hover:bg-[var(--ice)] hover:text-[var(--night)] transition-colors active:scale-[0.97] ${focusRing}`}
         >
-          Agendar <span aria-hidden>→</span>
+          Agendar{" "}
+          <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+            →
+          </span>
         </a>
       </div>
     </header>
@@ -163,12 +256,12 @@ function Hero() {
     offset: ["start start", "end start"],
   });
   /* Image drifts up as hero scrolls out — gradient at bottom hides any sub-pixel gap */
-  const parallaxY = useTransform(heroScroll, [0, 1], ["0%", "-6%"]);
-  const enableParallax = isDesktop && !prefersReduced;
+  const parallaxY = useTransform(heroScroll, [0, 1], isDesktop ? ["0%", "-10%"] : ["0%", "-7%"]);
+  const enableParallax = !prefersReduced;
 
   const headline = [
     "Nutrição para quem cansou",
-    "de começar do zero",
+    <>de começar <span className="whitespace-nowrap">do zero</span></>,
   ];
   return (
     <section
@@ -196,7 +289,7 @@ function Hero() {
             <p className="eyebrow text-[var(--ice)]/60">Nutrição Clínica · Esportiva</p>
           </motion.div>
 
-          <h1 className="font-display font-extrabold text-[44px] leading-[0.95] sm:text-6xl md:text-7xl lg:text-[96px] tracking-[-0.045em] text-[var(--ice)]">
+          <h1 className="font-display font-extrabold text-[40px] leading-[0.95] sm:text-6xl md:text-7xl lg:text-[96px] tracking-[-0.045em] text-[var(--ice)] text-balance [text-wrap:balance]">
             {headline.map((line, i) => (
               <span key={i} className="block overflow-hidden">
                 <motion.span
@@ -214,7 +307,7 @@ function Hero() {
                 initial={{ y: "110%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.7, delay: 0.05 + headline.length * 0.08, ease }}
-                className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] tracking-[-0.02em] mt-2 md:mt-4"
+                className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] leading-[1.15] tracking-[-0.02em] mt-2 md:mt-4 pb-[0.12em]"
               >
                 toda segunda-feira.
               </motion.span>
@@ -236,8 +329,8 @@ function Hero() {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center"
           >
-            <Cta>Agendar avaliação pelo WhatsApp</Cta>
-            <p className="text-[11px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
+            <Cta className="w-full sm:w-auto">Agendar avaliação pelo WhatsApp</Cta>
+            <p className="text-[11px] md:text-[12px] uppercase tracking-[0.2em] text-[var(--ice)]/70 font-display font-semibold leading-relaxed max-w-[15rem]">
               Emagrecimento · Hipertrofia · Recomposição · Rotina real
             </p>
           </motion.div>
@@ -267,21 +360,23 @@ function Hero() {
                 src={HERO_IMAGE}
                 alt="Matheus Correia, nutricionista"
                 className="absolute inset-0 h-full w-full object-cover object-[center_22%] grayscale-[15%] contrast-[1.05]"
-                style={enableParallax ? { y: parallaxY, scale: 1.2 } : { scale: 1.08, transformOrigin: "center" }}
+                style={enableParallax ? { y: parallaxY, scale: isDesktop ? 1.2 : 1.14 } : { scale: 1.08, transformOrigin: "center" }}
                 draggable={false}
                 onError={() => setHeroFailed(true)}
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/70 via-[var(--night)]/10 to-transparent" />
-            <div className="absolute top-5 left-5 right-5 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/80 font-display font-semibold">
-              <span>Matheus Correia</span>
-              <span>Nutrição</span>
-            </div>
+            {/* Single brand seal — bottom right only */}
             <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between gap-4">
               <MCMark decorative className="h-8 w-auto opacity-90" />
-              <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/70 font-display font-semibold max-w-[10rem] text-right">
-                Matheus Correia<br />Nutrição
-              </p>
+              <div className="text-right leading-tight">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
+                  Matheus Correia <span className="text-[var(--ice)]/35">|</span> Nutrição
+                </p>
+                <p className="mt-1 text-[9px] uppercase tracking-[0.3em] text-[var(--ice)]/55 font-display font-semibold">
+                  Routine Performance
+                </p>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -303,12 +398,14 @@ function CredibilityBar() {
   return (
     <section className="bg-[var(--night)] text-[var(--ice)] border-t border-[var(--ice)]/10">
       <div className="container-x py-8 md:py-10 flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
-        <p className="eyebrow text-[var(--mute)] md:whitespace-nowrap">Áreas de atuação</p>
+        <p className="font-display font-semibold uppercase tracking-[0.2em] text-[12px] md:text-[13px] leading-snug text-[var(--ice)]/80 md:max-w-[11rem]">
+          Áreas de atuação e especialidades
+        </p>
         <div className="flex flex-wrap gap-2 md:gap-3">
           {CHIPS.map((c) => (
             <span
               key={c}
-              className="text-[11px] uppercase tracking-[0.18em] font-display font-semibold border border-[var(--ice)]/15 text-[var(--ice)]/80 rounded-full px-4 py-2"
+              className="text-[11px] uppercase tracking-[0.18em] font-display font-semibold border border-[var(--ice)]/20 text-[var(--ice)]/85 rounded-full px-4 py-2 transition-colors duration-300 hover:border-[var(--ice)]/40"
             >
               {c}
             </span>
@@ -379,13 +476,7 @@ function Pain() {
           </h3>
           <h3 className="mt-3 md:mt-5 font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em]">
             Precisa de{" "}
-            <span
-              className="italic font-extrabold"
-              style={{
-                WebkitTextStroke: "1.5px var(--ice)",
-                color: "transparent",
-              }}
-            >
+            <span className="font-mono font-bold tracking-[-0.03em] text-[0.92em] text-[var(--ice)]">
               estratégia.
             </span>
           </h3>
@@ -415,10 +506,10 @@ function Positioning() {
     },
   ];
   return (
-    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32">
+    <section className="bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 pt-20 md:pt-28 pb-24 md:pb-32">
       <div className="container-x">
         {/* Header */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 mb-16 md:mb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-12 md:mb-16 items-start">
           <div className="lg:col-span-7">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
@@ -428,14 +519,14 @@ function Positioning() {
               className="flex items-center gap-3 mb-8"
             >
               <span className="h-px w-10 bg-[var(--ice)]/40" />
-              <p className="eyebrow text-[var(--mute)]">Individualidade</p>
+              <p className="eyebrow text-[var(--mute)]">O foco é na sua individualidade</p>
             </motion.div>
             <motion.h2
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.7, ease }}
-              className="font-display font-extrabold text-[40px] md:text-6xl lg:text-[80px] leading-[0.95] tracking-[-0.045em]"
+              className="font-display font-extrabold text-[40px] md:text-6xl lg:text-[80px] leading-[0.95] tracking-[-0.045em] text-balance"
             >
               O acompanhamento não começa com um cardápio.
               <span className="block text-[var(--mute)]">Começa entendendo você.</span>
@@ -446,11 +537,19 @@ function Positioning() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.7, delay: 0.15, ease }}
-            className="lg:col-span-5 lg:pt-4 self-end"
+            className="lg:col-span-5 lg:pt-3 self-start"
           >
-            <p className="text-base md:text-lg text-[var(--mute)] leading-relaxed max-w-md lg:ml-auto">
-              Sua rotina é única. Seu plano alimentar também precisa ser — com estratégia, comida de verdade e ajustes contínuos.
-            </p>
+            <div className="max-w-md lg:ml-auto">
+              <span className="block h-px w-12 bg-[var(--ice)]/30 mb-5" />
+              <p className="leading-relaxed tracking-[-0.01em]">
+                <span className="block font-display font-bold text-2xl md:text-3xl text-[var(--ice)] tracking-[-0.02em]">
+                  Sua rotina é única.
+                </span>
+                <span className="mt-3 block text-lg md:text-xl text-[var(--ice)]/70">
+                  Seu plano alimentar também precisa ser — com estratégia, comida de verdade e ajustes contínuos.
+                </span>
+              </p>
+            </div>
           </motion.div>
         </div>
 
@@ -465,15 +564,16 @@ function Positioning() {
               transition={{ duration: 0.6, delay: i * 0.08, ease }}
               className="bg-[var(--deep)] p-8 md:p-10"
             >
-              <div className="flex items-baseline justify-between mb-6">
-                <span className="font-display font-extrabold text-5xl md:text-6xl tabular-nums tracking-[-0.04em] text-[var(--ice)]">
+              <div className="flex items-center gap-3 mb-5">
+                <span className="text-[11px] tabular-nums font-display font-semibold tracking-[0.24em] text-[var(--mute)]">
                   {b.n}
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-                  {b.label}
-                </span>
+                <span className="h-px flex-1 bg-[var(--ice)]/12" />
               </div>
-              <p className="text-[var(--ice)]/85 text-base md:text-[17px] leading-relaxed">
+              <h3 className="font-display font-extrabold text-xl md:text-2xl tracking-[-0.02em] text-[var(--ice)]">
+                {b.label}
+              </h3>
+              <p className="mt-3 text-[var(--ice)]/80 text-[15px] md:text-base leading-relaxed">
                 {b.text}
               </p>
             </motion.div>
@@ -530,7 +630,7 @@ function Method() {
         decorative
         className="pointer-events-none select-none absolute -left-32 -top-16 h-[280px] md:h-[360px] w-auto opacity-[0.05]"
       />
-      <div className="container-x pt-24 md:pt-32 pb-8 md:pb-14 relative">
+      <div className="container-x pt-20 md:pt-28 pb-4 md:pb-8 relative">
         <div className="flex items-center gap-3 mb-6">
           <span className="h-px w-10 bg-[var(--ice)]/40" />
           <p className="eyebrow text-[var(--mute)]">Método</p>
@@ -547,7 +647,7 @@ function Method() {
       <div
         ref={containerRef}
         className="hidden lg:block relative"
-        style={{ height: `${METHOD_STEPS.length * 100}vh` }}
+        style={{ height: `${METHOD_STEPS.length * 80}vh` }}
       >
         <div className="sticky top-0 h-screen flex flex-col justify-center">
           {/* progress bar */}
@@ -607,31 +707,43 @@ function Method() {
         </div>
       </div>
 
-      {/* Mobile/tablet stacked */}
-      <div className="lg:hidden container-x pb-24 mt-4 space-y-4">
-        {METHOD_STEPS.map((step, i) => (
-          <motion.div
-            key={step.n}
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, delay: i * 0.05 }}
-            className="border border-[var(--ice)]/12 bg-[var(--deep)] p-6 rounded-lg"
-          >
-            <div className="flex items-baseline justify-between gap-4">
-              <span className="font-display font-extrabold text-6xl text-[var(--ice)] tabular-nums tracking-[-0.05em] leading-none">
+      {/* Mobile/tablet — premium stacked cards, each revealing with opacity/y/scale */}
+      <div className="lg:hidden container-x pb-24 mt-8">
+        <ol className="space-y-4">
+          {METHOD_STEPS.map((step, i) => (
+            <motion.li
+              key={step.n}
+              initial={{ opacity: 0, y: 24, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.55, delay: i * 0.05, ease }}
+              className="relative overflow-hidden rounded-xl border border-[var(--ice)]/12 bg-[var(--deep)] p-6"
+            >
+              {/* Oversized ghost numeral, clipped by the card */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -right-3 -top-7 select-none font-display font-extrabold text-[7rem] leading-none tabular-nums text-[var(--ice)]/[0.05]"
+              >
                 {step.n}
               </span>
-              <span className="text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-                / 04
-              </span>
-            </div>
-            <h3 className="mt-5 font-display font-extrabold text-2xl tracking-[-0.035em] leading-[1.05]">
-              {step.title}
-            </h3>
-            <p className="mt-3 text-[var(--mute)] leading-relaxed text-sm">{step.text}</p>
-          </motion.div>
-        ))}
+              <div className="relative">
+                <div className="flex items-center gap-3">
+                  <span className="font-display font-extrabold text-sm tabular-nums tracking-[0.1em] text-[var(--ice)]">
+                    {step.n}
+                  </span>
+                  <span className="h-px flex-1 bg-[var(--ice)]/15" />
+                  <span className="shrink-0 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+                    Etapa {step.n}/04
+                  </span>
+                </div>
+                <h3 className="mt-4 font-display font-extrabold text-2xl tracking-[-0.035em] leading-[1.1]">
+                  {step.title}
+                </h3>
+                <p className="mt-3 text-[var(--mute)] leading-relaxed text-sm">{step.text}</p>
+              </div>
+            </motion.li>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -648,6 +760,7 @@ function ImmersivePhoto({
   bottomCaption,
   className = "",
   parallaxOn,
+  deep,
   photoY,
   frameY,
   scale,
@@ -662,6 +775,7 @@ function ImmersivePhoto({
   bottomCaption: string;
   className?: string;
   parallaxOn: boolean;
+  deep: boolean;
   photoY: MotionVal;
   frameY: MotionVal;
   scale: MotionVal;
@@ -669,10 +783,12 @@ function ImmersivePhoto({
   wipeX: MotionVal;
   captionOpacity: MotionVal;
 }) {
+  /* Parallax (translateY + breath scale) goes directly on the img. The entry animation only
+   * touches opacity/filter — never scale/transform — so it can't clobber the parallax. */
   const imgStyle = parallaxOn
-    ? ({ y: photoY, scale } as unknown as CSSProperties)
-    : ({ scale: 1.04 } as unknown as CSSProperties);
-  const frameStyle = parallaxOn
+    ? ({ y: photoY, scale, objectPosition: objectPos } as unknown as CSSProperties)
+    : ({ scale: 1.04, objectPosition: objectPos } as unknown as CSSProperties);
+  const frameStyle = deep
     ? ({ y: frameY, scale: frameScale } as unknown as CSSProperties)
     : undefined;
   return (
@@ -702,15 +818,17 @@ function ImmersivePhoto({
             aria-hidden
           />
 
+          {/* Image — oversized (130%) so the parallax translateY never reveals an edge.
+              Parallax y/scale ride on the img via style; entry only fades + de-blurs. */}
           <motion.img
             src={src}
             alt={alt}
-            initial={{ scale: 1.18, filter: "blur(8px)" }}
-            whileInView={{ scale: 1.04, filter: "blur(0px)" }}
+            initial={{ opacity: 0, filter: "blur(8px)" }}
+            whileInView={{ opacity: 1, filter: "blur(0px)" }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 1.6, ease, delay: 0.2 }}
+            transition={{ duration: 1.2, ease, delay: 0.2 }}
             className="absolute inset-0 -top-[15%] h-[130%] w-full object-cover grayscale-[12%] contrast-[1.05] will-change-transform"
-            style={{ ...imgStyle, objectPosition: objectPos }}
+            style={imgStyle}
             draggable={false}
           />
 
@@ -718,8 +836,8 @@ function ImmersivePhoto({
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--night)]/75 via-[var(--night)]/10 to-transparent z-10" />
           <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[var(--night)]/40 z-10" />
 
-          {/* Wipe line traveling across on scroll */}
-          {parallaxOn && (
+          {/* Wipe line traveling across on scroll (desktop depth only) */}
+          {deep && (
             <motion.div
               aria-hidden
               style={{ x: wipeX } as unknown as CSSProperties}
@@ -727,9 +845,9 @@ function ImmersivePhoto({
             />
           )}
 
-          {/* Top caption */}
+          {/* Top caption (fades with scroll on desktop; static on mobile for legibility) */}
           <motion.div
-            style={parallaxOn ? ({ opacity: captionOpacity } as unknown as CSSProperties) : undefined}
+            style={deep ? ({ opacity: captionOpacity } as unknown as CSSProperties) : undefined}
             className="absolute top-5 left-5 right-5 z-20 flex items-center justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold"
           >
             <span className="flex items-center gap-2">
@@ -762,8 +880,11 @@ function TrainingNutrition() {
     frameScale,
     wipeX,
     captionOpacity,
-    enabled: parallaxOn,
+    enabled,
+    isDesktop,
   } = useParallax(sectionRef);
+  const parallaxOn = enabled;
+  const deep = enabled && isDesktop;
   return (
     <section
       ref={sectionRef}
@@ -772,7 +893,7 @@ function TrainingNutrition() {
       <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
         {/* Text */}
         <motion.div
-          style={parallaxOn ? { y: textY } : undefined}
+          style={deep ? { y: textY } : undefined}
           className="lg:col-span-6 order-2 lg:order-1"
         >
           <motion.div
@@ -785,11 +906,11 @@ function TrainingNutrition() {
               <span className="h-px w-10 bg-[var(--ice)]/40" />
               <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
             </div>
-            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em]">
+            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em] text-balance">
               A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
-              <span className="block">A nutrição constrói o resultado.</span>
+              <span className="block">A dieta constrói o resultado.</span>
             </h2>
-            <p className="mt-8 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
+            <p className="mt-7 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
               Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço se refletir na sua evolução.
             </p>
             <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
@@ -806,6 +927,7 @@ function TrainingNutrition() {
           bottomCaption="Treino · Performance"
           className="lg:col-span-6 order-1 lg:order-2"
           parallaxOn={parallaxOn}
+          deep={deep}
           photoY={photoY}
           frameY={frameY}
           scale={scale}
@@ -829,8 +951,11 @@ function RealLife() {
     frameScale,
     wipeX,
     captionOpacity,
-    enabled: parallaxOn,
+    enabled,
+    isDesktop,
   } = useParallax(sectionRef);
+  const parallaxOn = enabled;
+  const deep = enabled && isDesktop;
   return (
     <section
       ref={sectionRef}
@@ -841,10 +966,11 @@ function RealLife() {
           src="/matheus-burger.jpg"
           alt="Matheus Correia — alimentação real com estratégia"
           objectPos="center 40%"
-          topCaption="Vida real"
+          topCaption="Rotina real"
           bottomCaption="Estratégia · não proibição"
           className="lg:col-span-6"
           parallaxOn={parallaxOn}
+          deep={deep}
           photoY={photoY}
           frameY={frameY}
           scale={scale}
@@ -855,7 +981,7 @@ function RealLife() {
 
         {/* Text */}
         <motion.div
-          style={parallaxOn ? { y: textY } : undefined}
+          style={deep ? { y: textY } : undefined}
           className="lg:col-span-6"
         >
           <motion.div
@@ -866,7 +992,7 @@ function RealLife() {
           >
             <div className="flex items-center gap-3 mb-6">
               <span className="h-px w-10 bg-[var(--ice)]/40" />
-              <p className="eyebrow text-[var(--mute)]">Vida real</p>
+              <p className="eyebrow text-[var(--mute)]">Estratégia para uma rotina imperfeita</p>
             </div>
             <h2 className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
               Hambúrguer, chocolate e vida social{" "}
@@ -906,18 +1032,18 @@ function Services() {
         decorative
         className="pointer-events-none select-none absolute -right-32 -bottom-24 h-[420px] md:h-[560px] w-auto opacity-[0.04]"
       />
-      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
         <div className="lg:col-span-4">
-          <div className="flex items-center gap-3 mb-6 lg:sticky lg:top-24">
-            <span className="h-px w-10 bg-[var(--ice)]/40" />
-            <p className="eyebrow text-[var(--mute)]">Serviços</p>
-          </div>
-          <div className="lg:sticky lg:top-32">
+          <div className="lg:sticky lg:top-28">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Serviços</p>
+            </div>
             <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-[64px] tracking-[-0.045em] leading-[0.95]">
               Um trabalho,
               <span className="block text-[var(--mute)]">vários objetivos.</span>
             </h2>
-            <p className="mt-8 text-[var(--mute)] text-base leading-relaxed max-w-md">
+            <p className="mt-7 text-[var(--ice)]/80 text-base md:text-[17px] leading-relaxed max-w-md">
               Prática clínica, vivência no treino e atualização constante — planos que não existem só no papel.
             </p>
             <div className="mt-10 flex flex-col gap-2 text-[10px] uppercase tracking-[0.22em] text-[var(--mute)] font-display font-semibold">
@@ -966,33 +1092,17 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
       <div className="relative px-2 md:px-6 py-7 md:py-10">
         {/* Mobile: stacked. Desktop: 3 columns */}
         <div className="md:grid md:grid-cols-12 md:gap-8 md:items-center">
-          {/* Row 1 on mobile: number + arrow */}
-          <div className="flex items-center justify-between md:contents">
-            <span className="md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <span
-              aria-hidden
-              className="md:hidden text-[var(--ice)]/60 text-lg leading-none group-hover:text-[var(--ice)] transition-colors"
-            >
-              →
-            </span>
-          </div>
+          <span className="block md:col-span-1 text-[11px] tabular-nums font-display font-semibold tracking-[0.22em] text-[var(--mute)] group-hover:text-[var(--ice)] transition-colors duration-300">
+            {String(index + 1).padStart(2, "0")}
+          </span>
 
-          <h3 className="md:col-span-5 mt-3 md:mt-0 font-display font-extrabold text-[26px] md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+          <h3 className="md:col-span-6 mt-3 md:mt-0 font-display font-extrabold text-[26px] md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
             {title}
           </h3>
 
           <p className="md:col-span-5 mt-3 md:mt-0 text-sm md:text-base text-[var(--mute)] leading-relaxed max-w-md group-hover:text-[var(--ice)]/85 transition-colors duration-300">
             {desc}
           </p>
-
-          <span
-            aria-hidden
-            className="hidden md:flex md:col-span-1 justify-end text-[var(--ice)] text-xl leading-none transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2"
-          >
-            →
-          </span>
         </div>
       </div>
     </motion.a>
@@ -1102,14 +1212,26 @@ function FinalCta() {
             Comece a seguir um plano feito para você continuar.
           </span>
         </motion.h2>
-        <p className="mt-10 text-[var(--mute)] max-w-2xl mx-auto text-lg leading-relaxed">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.15, ease }}
+          className="mt-10 text-[var(--mute)] max-w-2xl mx-auto text-lg leading-relaxed"
+        >
           Transforme sua alimentação, sua rotina e seu resultado com um acompanhamento individualizado — sem culpa, sem terrorismo nutricional e sem dieta genérica.
-        </p>
-        <div className="mt-12 flex justify-center">
-          <Cta variant="ice" className="text-base px-9 py-5">
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.3, ease }}
+          className="mt-12 flex justify-center"
+        >
+          <Cta variant="ice" className="w-full sm:w-auto md:min-h-[62px]">
             Falar com Matheus no WhatsApp
           </Cta>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -1119,20 +1241,38 @@ function FinalCta() {
 function Footer() {
   return (
     <footer className="bg-[var(--nearblack)] text-[var(--mute)] border-t border-[var(--ice)]/10">
-      <div className="container-x py-10 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] uppercase tracking-[0.22em] font-display font-semibold">
+      <div className="container-x py-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+        {/* Brand mark (name lives only in the copyright line below) */}
         <div className="flex items-center gap-3 text-[var(--ice)]">
-          <MCMark className="h-6 w-auto" />
-          <span>Matheus Correia / Nutrição</span>
+          <MCMark className="h-7 w-auto" />
         </div>
-        <span>© {new Date().getFullYear()} · Matheus Correia Nutrição</span>
-        <a
-          href={WHATSAPP}
-          target="_blank"
-          rel="noreferrer"
-          className={`hover:text-[var(--ice)] transition-colors ${focusRing}`}
-        >
-          WhatsApp →
-        </a>
+        {/* Contact */}
+        <div className="flex items-center gap-6 text-[11px] uppercase tracking-[0.22em] font-display font-semibold">
+          <a
+            href={WHATSAPP}
+            target="_blank"
+            rel="noreferrer"
+            className={`group inline-flex items-center gap-2 text-[var(--ice)]/90 hover:text-[var(--ice)] transition-colors ${focusRing}`}
+          >
+            WhatsApp
+            <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </a>
+          <a
+            href="https://www.instagram.com/matheuscorreianutri/"
+            target="_blank"
+            rel="noreferrer"
+            className={`group inline-flex items-center gap-2 text-[var(--ice)]/90 hover:text-[var(--ice)] transition-colors ${focusRing}`}
+          >
+            Instagram
+            <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </a>
+        </div>
+      </div>
+      {/* Copyright */}
+      <div className="container-x pb-10">
+        <p className="text-[12px] leading-relaxed text-[var(--mute)]/80">
+          © 2026 Matheus Correia — nutricionista clínico, esportivo e Routine Performance.
+        </p>
       </div>
     </footer>
   );

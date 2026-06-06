@@ -1,6 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, useState, useEffect, type CSSProperties } from "react";
 import { ChevronRight } from "lucide-react";
+import { TrainingMediaStage } from "./TrainingMediaStage";
 
 const WHATSAPP = "https://wa.me/message/K5WYIUI5FXYFE1";
 
@@ -307,7 +308,7 @@ function Hero() {
                 initial={{ y: "110%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.7, delay: 0.05 + headline.length * 0.08, ease }}
-                className="block font-narrow italic font-medium text-[var(--mute)] text-[28px] sm:text-4xl md:text-5xl lg:text-[56px] leading-[1.15] tracking-[-0.02em] mt-2 md:mt-4 pb-[0.12em]"
+                className="block font-narrow italic font-medium text-[var(--mute)] text-[34px] sm:text-4xl md:text-5xl lg:text-[56px] leading-[1.12] tracking-[-0.02em] mt-2 md:mt-4 pb-[0.12em]"
               >
                 toda segunda-feira.
               </motion.span>
@@ -870,138 +871,13 @@ function ImmersivePhoto({
   );
 }
 
-/* Editorial video card — gains presence on scroll via LOCAL useScroll/useTransform.
- * No scroll hijack, no global listeners, no preventDefault, no window.scrollTo. */
-function ExpandingVideoCard({
-  src,
-  poster,
-  className = "",
-}: {
-  src: string;
-  poster: string;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const prefersReduced = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "center center"],
-  });
-  const scale = useTransform(scrollYProgress, [0, 1], prefersReduced ? [1, 1] : [0.94, 1]);
-  const y = useTransform(scrollYProgress, [0, 1], prefersReduced ? [0, 0] : [28, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.35, 1], [0.72, 0.95, 1]);
-  return (
-    <motion.div
-      ref={ref}
-      style={{ scale, y, opacity }}
-      className={`relative aspect-[4/5] overflow-hidden rounded-2xl border border-[var(--ice)]/12 bg-[var(--deep)] shadow-2xl will-change-transform ${className}`}
-    >
-      {/* Silent editorial video: muted + loop + inline, no controls/sound UI. */}
-      <video
-        src={src}
-        poster={poster}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="h-full w-full object-cover"
-      />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
-      <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2 text-[10px] font-display font-semibold uppercase tracking-[0.24em] text-[var(--ice)]/85">
-        <span className="h-px w-6 bg-[var(--ice)]/60" />
-        Fala Nutri
-      </div>
-      <div className="pointer-events-none absolute bottom-4 right-4 text-[10px] font-display font-semibold uppercase tracking-[0.2em] text-[var(--ice)]/70">
-        Treino + Nutrição
-      </div>
-    </motion.div>
-  );
-}
-
-/* Video (principal) + foto da sacola (secundária). Desktop: sacola sobrepõe um canto;
- * mobile: empilha limpo, sem overflow horizontal. */
-function TrainingMediaFeature({
-  videoSrc,
-  posterSrc,
-  bagSrc,
-  className = "",
-}: {
-  videoSrc: string;
-  posterSrc: string;
-  bagSrc: string;
-  className?: string;
-}) {
-  return (
-    <div className={`relative ${className}`}>
-      <ExpandingVideoCard src={videoSrc} poster={posterSrc} />
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ duration: 0.8, ease, delay: 0.15 }}
-        className="mt-4 lg:mt-0 lg:absolute lg:-bottom-8 lg:-left-8 lg:z-10 lg:w-[46%]"
-      >
-        <div className="relative aspect-[3/2] overflow-hidden rounded-xl border border-[var(--ice)]/15 bg-[var(--deep)] shadow-xl">
-          <img
-            src={bagSrc}
-            alt="Comida de verdade — rotina alimentar com estratégia"
-            className="h-full w-full object-cover grayscale-[12%] contrast-[1.05]"
-            draggable={false}
-          />
-          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--night)]/45 to-transparent" />
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 function TrainingNutrition() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const { textY, enabled, isDesktop } = useParallax(sectionRef);
-  const deep = enabled && isDesktop;
   return (
-    <section
-      ref={sectionRef}
-      className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10 overflow-hidden py-20 md:py-28 lg:py-32"
-    >
-      <div className="container-x relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-        {/* Text */}
-        <motion.div
-          style={deep ? { y: textY } : undefined}
-          className="lg:col-span-6 order-2 lg:order-1"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 1, ease }}
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <span className="h-px w-10 bg-[var(--ice)]/40" />
-              <p className="eyebrow text-[var(--mute)]">Treino + Nutrição</p>
-            </div>
-            <h2 className="font-display font-extrabold text-[34px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em] text-balance">
-              A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
-              <span className="block">A dieta constrói o resultado.</span>
-            </h2>
-            <p className="mt-7 text-[var(--ice)]/85 text-base md:text-lg leading-relaxed max-w-lg">
-              Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço se refletir na sua evolução.
-            </p>
-            <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-              Fala Nutri · Rotina de performance
-            </p>
-          </motion.div>
-        </motion.div>
-
-        <TrainingMediaFeature
-          videoSrc="/media/fala-nutri-video-02.mp4"
-          posterSrc="/media/fala-nutri-video-02-poster.jpg"
-          bagSrc="/media/fala-nutri-bag.jpg"
-          className="lg:col-span-6 order-1 lg:order-2"
-        />
-      </div>
-    </section>
+    <TrainingMediaStage
+      videoSrc="/media/fala-nutri-video-02.mp4"
+      posterSrc="/media/fala-nutri-video-02-poster.jpg"
+      bagSrc="/media/fala-nutri-bag.jpg"
+    />
   );
 }
 
@@ -1318,7 +1194,7 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
 /* -------------------- FAQ -------------------- */
 const FAQS = [
   { q: "Preciso cortar tudo que gosto?", a: "Não. O plano é construído com estratégia, não com proibição. A ideia é organizar quantidade, frequência e contexto, mantendo comida real e o que você gosta dentro do que faz sentido para seu objetivo." },
-  { q: "O plano serve para quem treina?", a: "Sim. O foco do trabalho é justamente unir treino e nutrição, organizando energia, proteína e recuperação para o esforço se refletir na sua evolução." },
+  { q: "O plano serve para quem treina?", a: "Sim. O foco do trabalho é justamente unir treino e nutrição, organizando energia, performance e recuperação para o esforço se refletir na sua evolução." },
   { q: "Funciona para quem tem rotina corrida?", a: "É feito para isso. O plano é desenhado a partir da sua rotina real — horários, deslocamentos, refeições fora — e não de um cenário ideal que não existe." },
   { q: "Como é definido o formato do acompanhamento?", a: "O formato é definido após avaliação, considerando objetivo, rotina e necessidade de acompanhamento. Os ajustes acontecem conforme a evolução." },
   { q: "Como funciona a primeira consulta?", a: "Conversamos sobre seu histórico, objetivo, rotina, treino e preferências. A partir disso é construído o plano e definido o ritmo de acompanhamento." },

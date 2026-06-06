@@ -870,20 +870,95 @@ function ImmersivePhoto({
   );
 }
 
+/* Editorial video card — gains presence on scroll via LOCAL useScroll/useTransform.
+ * No scroll hijack, no global listeners, no preventDefault, no window.scrollTo. */
+function ExpandingVideoCard({
+  src,
+  poster,
+  className = "",
+}: {
+  src: string;
+  poster: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const prefersReduced = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "center center"],
+  });
+  const scale = useTransform(scrollYProgress, [0, 1], prefersReduced ? [1, 1] : [0.94, 1]);
+  const y = useTransform(scrollYProgress, [0, 1], prefersReduced ? [0, 0] : [28, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 0.35, 1], [0.72, 0.95, 1]);
+  return (
+    <motion.div
+      ref={ref}
+      style={{ scale, y, opacity }}
+      className={`relative aspect-[4/5] overflow-hidden rounded-2xl border border-[var(--ice)]/12 bg-[var(--deep)] shadow-2xl will-change-transform ${className}`}
+    >
+      {/* Silent editorial video: muted + loop + inline, no controls/sound UI. */}
+      <video
+        src={src}
+        poster={poster}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        className="h-full w-full object-cover"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--night)]/55 via-transparent to-transparent" />
+      <div className="pointer-events-none absolute top-4 left-4 flex items-center gap-2 text-[10px] font-display font-semibold uppercase tracking-[0.24em] text-[var(--ice)]/85">
+        <span className="h-px w-6 bg-[var(--ice)]/60" />
+        Fala Nutri
+      </div>
+      <div className="pointer-events-none absolute bottom-4 right-4 text-[10px] font-display font-semibold uppercase tracking-[0.2em] text-[var(--ice)]/70">
+        Treino + Nutrição
+      </div>
+    </motion.div>
+  );
+}
+
+/* Video (principal) + foto da sacola (secundária). Desktop: sacola sobrepõe um canto;
+ * mobile: empilha limpo, sem overflow horizontal. */
+function TrainingMediaFeature({
+  videoSrc,
+  posterSrc,
+  bagSrc,
+  className = "",
+}: {
+  videoSrc: string;
+  posterSrc: string;
+  bagSrc: string;
+  className?: string;
+}) {
+  return (
+    <div className={`relative ${className}`}>
+      <ExpandingVideoCard src={videoSrc} poster={posterSrc} />
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-60px" }}
+        transition={{ duration: 0.8, ease, delay: 0.15 }}
+        className="mt-4 lg:mt-0 lg:absolute lg:-bottom-8 lg:-left-8 lg:z-10 lg:w-[46%]"
+      >
+        <div className="relative aspect-[3/2] overflow-hidden rounded-xl border border-[var(--ice)]/15 bg-[var(--deep)] shadow-xl">
+          <img
+            src={bagSrc}
+            alt="Comida de verdade — rotina alimentar com estratégia"
+            className="h-full w-full object-cover grayscale-[12%] contrast-[1.05]"
+            draggable={false}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--night)]/45 to-transparent" />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 function TrainingNutrition() {
   const sectionRef = useRef<HTMLElement>(null);
-  const {
-    y: photoY,
-    frameY,
-    textY,
-    scale,
-    frameScale,
-    wipeX,
-    captionOpacity,
-    enabled,
-    isDesktop,
-  } = useParallax(sectionRef);
-  const parallaxOn = enabled;
+  const { textY, enabled, isDesktop } = useParallax(sectionRef);
   const deep = enabled && isDesktop;
   return (
     <section
@@ -914,26 +989,16 @@ function TrainingNutrition() {
               Se você já faz esforço na academia, sua alimentação precisa trabalhar junto — organizando energia, proteína e recuperação para esse esforço se refletir na sua evolução.
             </p>
             <p className="mt-10 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-              Arnold Sports · South America
+              Fala Nutri · Rotina de performance
             </p>
           </motion.div>
         </motion.div>
 
-        <ImmersivePhoto
-          src="/matheus-arnold.jpg"
-          alt="Matheus Correia no Arnold Sports Festival South America"
-          objectPos="center 25%"
-          topCaption="Arnold · 2024"
-          bottomCaption="Treino · Performance"
+        <TrainingMediaFeature
+          videoSrc="/media/fala-nutri-video-02.mp4"
+          posterSrc="/media/fala-nutri-video-02-poster.jpg"
+          bagSrc="/media/fala-nutri-bag.jpg"
           className="lg:col-span-6 order-1 lg:order-2"
-          parallaxOn={parallaxOn}
-          deep={deep}
-          photoY={photoY}
-          frameY={frameY}
-          scale={scale}
-          frameScale={frameScale}
-          wipeX={wipeX}
-          captionOpacity={captionOpacity}
         />
       </div>
     </section>
@@ -1007,6 +1072,147 @@ function RealLife() {
             </h3>
           </motion.div>
         </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- Proof Social (Declarações) -------------------- */
+type Testimonial = {
+  quote: string;
+  label: string;
+};
+
+const TESTIMONIALS: Testimonial[] = [
+  {
+    quote:
+      "O dinheiro bem gasto. Pensei que era leseira isso. Malhava um mês, mas não saía nada.",
+    label: "Paciente em acompanhamento",
+  },
+  {
+    quote:
+      "O bom da dieta que tu montou são as variedades que consigo escolher. O cara não enjoa.",
+    label: "Paciente em acompanhamento",
+  },
+  {
+    quote: "Consegui seguir o planejamento perfeitamente, não tive nenhuma dificuldade.",
+    label: "Paciente em acompanhamento",
+  },
+  {
+    quote: "Percebi mudanças no peso, estou me sentindo menos inchado e mais leve.",
+    label: "Paciente em acompanhamento",
+  },
+  {
+    quote: "Nenhuma dificuldade para seguir.",
+    label: "Paciente em acompanhamento",
+  },
+];
+
+const PROOF_PHOTOS = [
+  { src: "/media/paciente-mulher-clinica.jpg", alt: "Atendimento nutricional em consultório" },
+  { src: "/media/paciente-homem-clinica.jpg", alt: "Atendimento nutricional em consultório" },
+];
+
+function QuoteCard({ quote, label }: Testimonial) {
+  return (
+    <motion.figure
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease }}
+      className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-[var(--ice)]/12 bg-[var(--nearblack)] p-6 md:p-8"
+    >
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -top-2 left-5 select-none font-display font-black leading-none text-[5.5rem] text-[var(--ice)]/[0.06]"
+      >
+        &ldquo;
+      </span>
+      <blockquote className="relative text-[var(--ice)]/90 text-base md:text-lg leading-relaxed tracking-[-0.01em]">
+        {quote}
+      </blockquote>
+      <figcaption className="relative mt-6 flex items-center gap-3">
+        <span className="h-px w-6 bg-[var(--ice)]/30" />
+        <span className="text-[10px] font-display font-semibold uppercase tracking-[0.24em] text-[var(--mute)]">
+          {label}
+        </span>
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function ProofSocialSection() {
+  return (
+    <section className="relative bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32 overflow-hidden">
+      <div className="container-x relative">
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end mb-12 md:mb-16">
+          <div className="lg:col-span-7">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="h-px w-10 bg-[var(--ice)]/40" />
+              <p className="eyebrow text-[var(--mute)]">Declarações</p>
+            </div>
+            <h2 className="font-display font-extrabold text-[40px] md:text-6xl lg:text-7xl leading-[0.95] tracking-[-0.045em]">
+              Pessoas reais.
+              <span className="block text-[var(--mute)]">Rotina real.</span>
+              <span className="block">Evolução real.</span>
+            </h2>
+          </div>
+          <div className="lg:col-span-5">
+            <p className="text-base md:text-lg text-[var(--ice)]/75 leading-relaxed max-w-md lg:ml-auto">
+              Relatos de quem passou pelo processo com estratégia, ajuste e acompanhamento.
+            </p>
+          </div>
+        </div>
+
+        {/* Supporting photos — apoio visual (não antes/depois) */}
+        <div className="grid grid-cols-2 gap-3 md:gap-5 mb-10 md:mb-12">
+          {PROOF_PHOTOS.map((p) => (
+            <motion.div
+              key={p.src}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.8, ease }}
+              className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-[var(--ice)]/10 bg-[var(--nearblack)]"
+            >
+              <img
+                src={p.src}
+                alt={p.alt}
+                className="h-full w-full object-cover object-top grayscale-[15%] contrast-[1.05]"
+                draggable={false}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--night)]/40 to-transparent" />
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Quote grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+          {TESTIMONIALS.map((t, i) => (
+            <QuoteCard key={i} quote={t.quote} label={t.label} />
+          ))}
+        </div>
+
+        {/* Google reviews — own anchor (Cta aponta para WhatsApp) */}
+        <div className="mt-12 md:mt-16 flex flex-col sm:flex-row sm:items-center gap-5">
+          <a
+            href="https://g.page/r/CT858OLaJsGrEAI/review"
+            target="_blank"
+            rel="noreferrer"
+            className={`group inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full border border-[var(--ice)]/40 px-7 text-[12px] md:text-[13px] font-display font-bold uppercase tracking-[0.2em] text-[var(--ice)] transition-colors duration-300 hover:bg-[var(--ice)] hover:text-[var(--night)] ${focusRing}`}
+          >
+            Ver avaliações no Google
+            <ChevronRight
+              size={18}
+              strokeWidth={2.5}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </a>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[var(--mute)] font-display font-semibold leading-relaxed max-w-xs">
+            Depoimentos reais de pacientes em acompanhamento.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -1288,6 +1494,7 @@ export function Landing() {
       <Method />
       <TrainingNutrition />
       <RealLife />
+      <ProofSocialSection />
       <Services />
       <Faq />
       <FinalCta />

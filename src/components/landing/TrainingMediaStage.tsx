@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useMotionValueEvent } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -42,6 +42,17 @@ export function TrainingMediaStage({
   const [raw, setRaw] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => setRaw(v));
 
+  /* Autoplay em loop robusto: o atributo `muted` do React nem sempre vira propriedade
+   * no DOM, e sem muted o navegador bloqueia/interrompe o autoplay. Forçamos via ref e
+   * mantemos um fallback no onEnded caso o `loop` nativo não reinicie. */
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = true;
+    void v.play().catch(() => {});
+  }, []);
+
   /* prefers-reduced-motion: mostra o vídeo já expandido, estático. */
   const p = prefersReduced ? 1 : raw;
 
@@ -61,7 +72,7 @@ export function TrainingMediaStage({
   return (
     <section className="relative bg-[var(--nearblack)] text-[var(--ice)] border-t border-[var(--ice)]/10">
       {/* Bloco alto = espaço de scroll para a expansão acontecer */}
-      <div ref={ref} className="relative" style={{ height: "230vh" }}>
+      <div ref={ref} className="relative h-[180vh] md:h-[230vh]">
         {/* Palco fixo */}
         <div className="sticky top-0 flex h-[100svh] items-center justify-center overflow-hidden">
           {/* Fundo: foto da sacola (Fala Nutri) */}
@@ -93,7 +104,7 @@ export function TrainingMediaStage({
           >
             <div className="container-x flex items-center gap-3">
               <span className="h-px w-10 bg-[var(--ice)]/40" />
-              <p className="eyebrow text-[var(--ice)]/70">Treino + Nutrição</p>
+              <p className="eyebrow text-[var(--ice)]/70">Eventos</p>
             </div>
           </div>
 
@@ -103,6 +114,7 @@ export function TrainingMediaStage({
             className="relative z-10 aspect-[9/16] h-[58svh] overflow-hidden border border-[var(--ice)]/12 bg-[var(--deep)] shadow-2xl will-change-transform lg:h-[82svh]"
           >
             <video
+              ref={videoRef}
               src={videoSrc}
               poster={posterSrc}
               autoPlay
@@ -110,6 +122,11 @@ export function TrainingMediaStage({
               loop
               playsInline
               preload="metadata"
+              onEnded={(e) => {
+                const v = e.currentTarget;
+                v.currentTime = 0;
+                void v.play().catch(() => {});
+              }}
               className="h-full w-full object-cover"
             />
             <div
@@ -146,7 +163,7 @@ export function TrainingMediaStage({
           transition={{ duration: 1, ease }}
           className="max-w-4xl"
         >
-          <h2 className="font-display font-extrabold text-[34px] leading-[0.98] tracking-[-0.045em] text-balance md:text-5xl lg:text-[60px]">
+          <h2 className="font-display font-extrabold text-[34px] leading-[0.98] tracking-[-0.02em] text-balance md:text-5xl lg:text-[60px]">
             A academia constrói <span className="text-[var(--mute)]">o estímulo.</span>
             <span className="block">A dieta constrói o resultado.</span>
           </h2>

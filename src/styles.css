@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Narrow:wght@500;600;700&family=Oxygen:wght@300;400;700&display=swap");
+/* Google Fonts (Oswald + Manrope + Archivo Narrow) carregam via <link> no <head>
+ * em src/routes/__root.tsx — o Vite/Nitro descarta @import url(externo) no build SSR. */
 @source "../src";
 
 @custom-variant dark (&:is(.dark *));
@@ -68,9 +69,9 @@
   --color-icebg: var(--icebg);
   --color-mute: var(--mute);
   --color-rule: var(--rule);
-  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-narrow: "Archivo Narrow", "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Oxygen", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-narrow: "Archivo Narrow", "Oswald", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -168,12 +169,12 @@
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.035em;
+    letter-spacing: -0.02em;
     font-weight: 700;
   }
 
   .font-display { font-family: var(--font-display); }
-  .font-narrow { font-family: var(--font-narrow); font-stretch: condensed; }
+  .font-narrow { font-family: var(--font-narrow); }
 
   .eyebrow {
     font-family: var(--font-display);

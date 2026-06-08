@@ -290,7 +290,7 @@ function Hero() {
             <p className="eyebrow text-[var(--ice)]/60">Nutrição Clínica · Esportiva</p>
           </motion.div>
 
-          <h1 className="font-display font-extrabold text-[40px] leading-[0.95] sm:text-6xl md:text-7xl lg:text-[96px] tracking-[-0.045em] text-[var(--ice)] text-balance [text-wrap:balance]">
+          <h1 className="font-display font-extrabold text-[40px] leading-[0.98] sm:text-6xl md:text-7xl lg:text-[96px] tracking-[-0.02em] text-[var(--ice)] text-balance [text-wrap:balance]">
             {headline.map((line, i) => (
               <span key={i} className="block overflow-hidden">
                 <motion.span
@@ -308,7 +308,7 @@ function Hero() {
                 initial={{ y: "110%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.7, delay: 0.05 + headline.length * 0.08, ease }}
-                className="block font-narrow italic font-medium text-[var(--mute)] text-[34px] sm:text-4xl md:text-5xl lg:text-[56px] leading-[1.12] tracking-[-0.02em] mt-2 md:mt-4 pb-[0.12em]"
+                className="block font-narrow italic font-medium text-[var(--mute)] text-[38px] sm:text-5xl md:text-6xl lg:text-[80px] leading-[1.1] tracking-[-0.02em] mt-2 md:mt-3 pb-[0.12em]"
               >
                 toda segunda-feira.
               </motion.span>
@@ -454,7 +454,7 @@ function Pain() {
               <span className="col-span-12 md:col-span-1 text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold tabular-nums">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <h2 className="col-span-12 md:col-span-5 font-display font-extrabold text-2xl md:text-4xl lg:text-5xl leading-[1.02] tracking-[-0.035em] text-[var(--ice)]">
+              <h2 className="col-span-12 md:col-span-5 font-display font-extrabold text-2xl md:text-4xl lg:text-5xl leading-[1.02] tracking-[-0.02em] text-[var(--ice)]">
                 {p.a}
               </h2>
               <p className="col-span-12 md:col-span-6 font-display font-medium text-xl md:text-2xl lg:text-3xl leading-[1.15] tracking-[-0.02em] text-[var(--mute)]">
@@ -472,14 +472,17 @@ function Pain() {
           className="mt-20 md:mt-28"
         >
           <p className="eyebrow text-[var(--mute)] mb-6">A virada</p>
-          <h3 className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
-            Você não precisa de culpa.
-          </h3>
-          <h3 className="mt-3 md:mt-5 font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em]">
-            Precisa de{" "}
-            <span className="font-mono font-bold tracking-[-0.03em] text-[0.92em] text-[var(--ice)]">
-              estratégia.
+          <h3 className="font-display font-extrabold leading-[1.0] tracking-[-0.02em] text-[var(--ice)]">
+            <span className="block text-2xl md:text-3xl lg:text-4xl font-medium text-[var(--mute)]">
+              Você não precisa de
             </span>
+            <span className="block text-5xl md:text-6xl lg:text-7xl">culpa.</span>
+          </h3>
+          <h3 className="mt-5 md:mt-7 font-display font-extrabold leading-[1.0] tracking-[-0.02em] text-[var(--ice)]">
+            <span className="block text-2xl md:text-3xl lg:text-4xl font-medium text-[var(--mute)]">
+              Precisa de
+            </span>
+            <span className="block text-5xl md:text-6xl lg:text-7xl">estratégia.</span>
           </h3>
         </motion.div>
       </div>
@@ -527,7 +530,7 @@ function Positioning() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.7, ease }}
-              className="font-display font-extrabold text-[40px] md:text-6xl lg:text-[80px] leading-[0.95] tracking-[-0.045em] text-balance"
+              className="font-display font-extrabold text-[40px] md:text-6xl lg:text-[80px] leading-[0.98] tracking-[-0.02em] text-balance"
             >
               O acompanhamento não começa com um cardápio.
               <span className="block text-[var(--mute)]">Começa entendendo você.</span>
@@ -542,7 +545,7 @@ function Positioning() {
           >
             <div className="max-w-md lg:ml-auto">
               <span className="block h-px w-12 bg-[var(--ice)]/30 mb-5" />
-              <p className="leading-relaxed tracking-[-0.01em]">
+              <p className="leading-relaxed tracking-[-0.02em]">
                 <span className="block font-display font-bold text-2xl md:text-3xl text-[var(--ice)] tracking-[-0.02em]">
                   Sua rotina é única.
                 </span>
@@ -625,6 +628,21 @@ function Method() {
 
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
+  /* Mobile uses the SAME guided sticky-scroll mechanic as desktop (no static cards/boxes). */
+  const mobileRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: mProgress } = useScroll({
+    target: mobileRef,
+    offset: ["start start", "end end"],
+  });
+  const [mActive, setMActive] = useState(0);
+  useEffect(() => {
+    return mProgress.on("change", (v) => {
+      const idx = Math.min(METHOD_STEPS.length - 1, Math.floor(v * METHOD_STEPS.length));
+      setMActive(idx);
+    });
+  }, [mProgress]);
+  const mProgressWidth = useTransform(mProgress, [0, 1], ["0%", "100%"]);
+
   return (
     <section id="metodo" className="bg-[var(--night)] text-[var(--ice)] relative">
       <MCMark
@@ -636,7 +654,7 @@ function Method() {
           <span className="h-px w-10 bg-[var(--ice)]/40" />
           <p className="eyebrow text-[var(--mute)]">Método</p>
         </div>
-        <h2 className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.045em] leading-[0.98] max-w-4xl">
+        <h2 className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl tracking-[-0.02em] leading-[0.98] max-w-4xl">
           Um plano feito para sair do papel.
         </h2>
         <p className="mt-6 max-w-2xl font-narrow italic text-[var(--mute)] text-lg md:text-xl leading-snug">
@@ -675,7 +693,7 @@ function Method() {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease }}
-                className="font-display font-extrabold text-[16rem] xl:text-[20rem] leading-none tracking-[-0.06em] text-[var(--ice)] tabular-nums"
+                className="font-display font-extrabold text-[16rem] xl:text-[20rem] leading-none tracking-[-0.02em] text-[var(--ice)] tabular-nums"
               >
                 {METHOD_STEPS[active].n}
               </motion.span>
@@ -691,7 +709,7 @@ function Method() {
                 <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
                   Etapa {METHOD_STEPS[active].n} / 04
                 </p>
-                <h3 className="mt-4 font-display font-extrabold text-4xl xl:text-5xl tracking-[-0.04em] leading-[1.0]">
+                <h3 className="mt-4 font-display font-extrabold text-4xl xl:text-5xl tracking-[-0.02em] leading-[0.98]">
                   {METHOD_STEPS[active].title}
                 </h3>
                 <p className="mt-6 text-[var(--mute)] text-lg leading-relaxed max-w-xl">
@@ -708,43 +726,63 @@ function Method() {
         </div>
       </div>
 
-      {/* Mobile/tablet — premium stacked cards, each revealing with opacity/y/scale */}
-      <div className="lg:hidden container-x pb-24 mt-8">
-        <ol className="space-y-4">
-          {METHOD_STEPS.map((step, i) => (
-            <motion.li
-              key={step.n}
-              initial={{ opacity: 0, y: 24, scale: 0.98 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.55, delay: i * 0.05, ease }}
-              className="relative overflow-hidden rounded-xl border border-[var(--ice)]/12 bg-[var(--deep)] p-6"
-            >
-              {/* Oversized ghost numeral, clipped by the card */}
-              <span
-                aria-hidden
-                className="pointer-events-none absolute -right-3 -top-7 select-none font-display font-extrabold text-[7rem] leading-none tabular-nums text-[var(--ice)]/[0.05]"
-              >
-                {step.n}
-              </span>
-              <div className="relative">
-                <div className="flex items-center gap-3">
-                  <span className="font-display font-extrabold text-sm tabular-nums tracking-[0.1em] text-[var(--ice)]">
-                    {step.n}
-                  </span>
-                  <span className="h-px flex-1 bg-[var(--ice)]/15" />
-                  <span className="shrink-0 text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
-                    Etapa {step.n}/04
-                  </span>
-                </div>
-                <h3 className="mt-4 font-display font-extrabold text-2xl tracking-[-0.035em] leading-[1.1]">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-[var(--mute)] leading-relaxed text-sm">{step.text}</p>
-              </div>
-            </motion.li>
-          ))}
-        </ol>
+      {/* Mobile — same guided sticky-scroll mechanic as desktop, no boxes */}
+      <div
+        ref={mobileRef}
+        className="lg:hidden relative"
+        style={{ height: `${METHOD_STEPS.length * 85}vh` }}
+      >
+        <div className="container-x sticky top-0 flex h-[100svh] flex-col justify-center">
+          {/* progress bar + step numbers */}
+          <div className="relative mb-10 h-px w-full bg-[var(--ice)]/10">
+            <motion.div
+              style={{ width: mProgressWidth }}
+              className="absolute left-0 top-0 h-px bg-[var(--ice)]"
+            />
+            <div className="absolute -top-4 left-0 right-0 flex justify-between text-[10px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold tabular-nums">
+              {METHOD_STEPS.map((s, i) => (
+                <span key={s.n} className={i === mActive ? "text-[var(--ice)]" : ""}>
+                  {s.n}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Giant numeral */}
+          <motion.span
+            key={mActive}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="font-display font-extrabold text-[7rem] sm:text-[9rem] leading-[0.85] tracking-[-0.02em] text-[var(--ice)] tabular-nums"
+          >
+            {METHOD_STEPS[mActive].n}
+          </motion.span>
+
+          {/* Title + text */}
+          <motion.div
+            key={METHOD_STEPS[mActive].n + "-m"}
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="mt-5 border-l-2 border-[var(--ice)] pl-5"
+          >
+            <p className="text-[11px] uppercase tracking-[0.24em] text-[var(--mute)] font-display font-semibold">
+              Etapa {METHOD_STEPS[mActive].n} / 04
+            </p>
+            <h3 className="mt-3 font-display font-extrabold text-2xl sm:text-3xl tracking-[-0.02em] leading-[1.05]">
+              {METHOD_STEPS[mActive].title}
+            </h3>
+            <p className="mt-4 text-[var(--mute)] leading-relaxed text-sm sm:text-base">
+              {METHOD_STEPS[mActive].text}
+            </p>
+            {mActive === 3 && (
+              <p className="mt-5 inline-block rounded-full border border-[var(--ice)]/30 px-4 py-2 text-[10px] uppercase tracking-[0.22em] text-[var(--ice)] font-display font-semibold">
+                Onde a maioria desiste — onde o trabalho começa
+              </p>
+            )}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -935,7 +973,7 @@ function RealLife() {
               <span className="h-px w-10 bg-[var(--ice)]/40" />
               <p className="eyebrow text-[var(--mute)]">Estratégia para uma rotina imperfeita</p>
             </div>
-            <h2 className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.045em] text-[var(--ice)]">
+            <h2 className="font-display font-extrabold text-[32px] md:text-5xl lg:text-[60px] leading-[0.98] tracking-[-0.02em] text-[var(--ice)]">
               Hambúrguer, chocolate e vida social{" "}
               <span className="text-[var(--mute)]">não precisam ser o fim do seu resultado.</span>
             </h2>
@@ -1004,7 +1042,7 @@ function QuoteCard({ quote, label }: Testimonial) {
       >
         &ldquo;
       </span>
-      <blockquote className="relative text-[var(--ice)]/90 text-base md:text-lg leading-relaxed tracking-[-0.01em]">
+      <blockquote className="relative text-[var(--ice)]/90 text-base md:text-lg leading-relaxed tracking-[-0.02em]">
         {quote}
       </blockquote>
       <figcaption className="relative mt-6 flex items-center gap-3">
@@ -1018,8 +1056,11 @@ function QuoteCard({ quote, label }: Testimonial) {
 }
 
 function ProofSocialSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-7%", "7%"]);
   return (
-    <section className="relative bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32 overflow-hidden">
+    <section ref={sectionRef} className="relative bg-[var(--deep)] text-[var(--ice)] border-t border-[var(--ice)]/10 py-24 md:py-32 overflow-hidden">
       <div className="container-x relative">
         {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end mb-12 md:mb-16">
@@ -1028,7 +1069,7 @@ function ProofSocialSection() {
               <span className="h-px w-10 bg-[var(--ice)]/40" />
               <p className="eyebrow text-[var(--mute)]">Declarações</p>
             </div>
-            <h2 className="font-display font-extrabold text-[40px] md:text-6xl lg:text-7xl leading-[0.95] tracking-[-0.045em]">
+            <h2 className="font-display font-extrabold text-[40px] md:text-6xl lg:text-7xl leading-[0.98] tracking-[-0.02em]">
               Pessoas reais.
               <span className="block text-[var(--mute)]">Rotina real.</span>
               <span className="block">Evolução real.</span>
@@ -1052,10 +1093,11 @@ function ProofSocialSection() {
               transition={{ duration: 0.8, ease }}
               className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-[var(--ice)]/10 bg-[var(--nearblack)]"
             >
-              <img
+              <motion.img
                 src={p.src}
                 alt={p.alt}
-                className="h-full w-full object-cover object-top grayscale-[15%] contrast-[1.05]"
+                style={{ y: imgY }}
+                className="absolute inset-x-0 -top-[8%] h-[116%] w-full object-cover object-top grayscale-[15%] contrast-[1.05] will-change-transform"
                 draggable={false}
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--night)]/40 to-transparent" />
@@ -1121,7 +1163,7 @@ function Services() {
               <span className="h-px w-10 bg-[var(--ice)]/40" />
               <p className="eyebrow text-[var(--mute)]">Serviços</p>
             </div>
-            <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-[64px] tracking-[-0.045em] leading-[0.95]">
+            <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-[64px] tracking-[-0.02em] leading-[0.98]">
               Um trabalho,
               <span className="block text-[var(--mute)]">vários objetivos.</span>
             </h2>
@@ -1178,7 +1220,7 @@ function ServiceRow({ index, title, desc }: { index: number; title: string; desc
             {String(index + 1).padStart(2, "0")}
           </span>
 
-          <h3 className="md:col-span-6 mt-3 md:mt-0 font-display font-extrabold text-[26px] md:text-3xl lg:text-[40px] tracking-[-0.035em] leading-[1.0] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
+          <h3 className="md:col-span-6 mt-3 md:mt-0 font-display font-extrabold text-[26px] md:text-3xl lg:text-[40px] tracking-[-0.02em] leading-[0.98] text-[var(--ice)] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2">
             {title}
           </h3>
 
@@ -1215,7 +1257,7 @@ function Faq() {
             <span className="h-px w-10 bg-[var(--ice)]/40" />
           <p className="eyebrow text-[var(--mute)]">Perguntas frequentes</p>
           </div>
-          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.045em] leading-[0.98]">
+          <h2 className="font-display font-extrabold text-4xl md:text-5xl lg:text-6xl tracking-[-0.02em] leading-[0.98]">
             Antes da primeira consulta.
           </h2>
         </div>
@@ -1287,10 +1329,10 @@ function FinalCta() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.9, ease }}
-          className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.045em]"
+          className="font-display font-extrabold text-5xl md:text-7xl lg:text-8xl leading-[0.98] tracking-[-0.02em]"
         >
           Pare de recomeçar toda segunda.
-          <span className="block text-[var(--mute)]">
+          <span className="block text-[var(--mute)] text-3xl md:text-5xl lg:text-6xl mt-3">
             Comece a seguir um plano feito para você continuar.
           </span>
         </motion.h2>

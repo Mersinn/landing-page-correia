@@ -374,9 +374,6 @@ function Hero() {
                 <p className="text-[10px] uppercase tracking-[0.24em] text-[var(--ice)]/85 font-display font-semibold">
                   Matheus Correia <span className="text-[var(--ice)]/35">|</span> Nutrição
                 </p>
-                <p className="mt-1 text-[9px] uppercase tracking-[0.3em] text-[var(--ice)]/55 font-display font-semibold">
-                  Routine Performance
-                </p>
               </div>
             </div>
           </motion.div>
@@ -1141,7 +1138,7 @@ const SERVICES = [
   { t: "Emagrecimento", d: "Plano com déficit sustentável e ajuste contínuo." },
   { t: "Hipertrofia", d: "Estratégia para ganho de massa com qualidade." },
   { t: "Recomposição corporal", d: "Perder gordura e ganhar massa em paralelo." },
-  { t: "Nutrição para treino", d: "Energia, proteína e recuperação organizadas." },
+  { t: "Nutrição para treino", d: "Energia, performance e recuperação organizadas." },
   { t: "Acompanhamento contínuo", d: "Formato definido após avaliação, com ajustes conforme evolução." },
   { t: "Rotina real", d: "Plano que cabe em quem trabalha, treina e vive." },
 ];
